@@ -7,6 +7,10 @@
 
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 
 
 class Ui_MainWindow(object):
@@ -128,7 +132,7 @@ class Ui_MainWindow(object):
         item = self.tableWidget.item(3, 1)
         item.setText(_translate("MainWindow", "310.6"))
         self.tableWidget.setSortingEnabled(__sortingEnabled)
-        self.label.setText(_translate("MainWindow", "Prediction"))
+        self.label.setText(_translate("MainWindow", "Predictions "))
         self.label_2.setText(_translate("MainWindow", "Result"))
         self.label_3.setText(_translate("MainWindow", "Import File"))
         self.pushButton_2.setText(_translate("MainWindow", "Choose File"))
