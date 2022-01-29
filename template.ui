@@ -136,26 +136,77 @@
       </item>
       <item row="1" column="0" colspan="2">
        <widget class="QTableWidget" name="predictionTableWidget">
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAsNeeded</enum>
+        </property>
+        <property name="autoScroll">
+         <bool>true</bool>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="gridStyle">
+         <enum>Qt::SolidLine</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>false</bool>
+        </property>
+        <attribute name="horizontalHeaderCascadingSectionResizes">
+         <bool>false</bool>
+        </attribute>
         <row>
          <property name="text">
-          <string/>
+          <string>ph</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string/>
+          <string>Hardness</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string/>
+          <string>Solids</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string/>
+          <string>Chloramines</string>
          </property>
         </row>
+        <row>
+         <property name="text">
+          <string>Sulfate</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Conductivity</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Organic carbon</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Trihalomethanes</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Turbidity</string>
+         </property>
+        </row>
+        <column>
+         <property name="text">
+          <string>Value</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item row="2" column="1">
