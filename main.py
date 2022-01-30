@@ -5,7 +5,7 @@ from PyQt6 import QtWidgets as qtw
 
 # import numpy as np
 # for exe file compilation
-# import sklearn.utils._typedefs
+import sklearn.utils._typedefs
 
 
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
