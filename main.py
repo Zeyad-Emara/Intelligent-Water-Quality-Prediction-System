@@ -3,7 +3,6 @@ from template import Ui_MainWindow
 # from PyQt6 import QtCore as qtc
 from PyQt6 import QtWidgets as qtw
 
-# import numpy as np
 # for exe file compilation
 import sklearn.utils._typedefs
 
