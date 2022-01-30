@@ -24,6 +24,7 @@ class Window(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.resize(1000, 650)
+
         # Your code starts here
         self.filePath = None
         self.predict_input = None
@@ -31,23 +32,21 @@ class Window(qtw.QMainWindow):
         self.reg = None
         self.data_frame = None
 
-        # Plot graph and Toolbar
+        # Update statusbar
+        self.ui.statusbar.showMessage("No dataset found")
+
+        # Draw canvas and Toolbar
         self.layout = qtw.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
         self.layout.addWidget(NavigationToolbar(self.static_canvas, self))
         self.graph = self.static_canvas.figure.subplots()
-        # t = np.linspace(0, 10, 501)
-        # self.graph.plot(t, np.tan(t), ".")
         self.layout.addWidget(self.static_canvas)
         self.ui.graphWidget.setLayout(self.layout)
 
         # add import button function
         self.ui.importPushButton.clicked.connect(self.find_csv)
 
-        # build model
-        self.ui.importPushButton.clicked.connect(self.build_model)
-
-        # predict value
+        # add predicting value function
         self.ui.predictPushButton.clicked.connect(self.prediction)
 
         # set result display area read only
@@ -58,6 +57,7 @@ class Window(qtw.QMainWindow):
 
     def find_csv(self):
         self.filePath = qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
+        self.build_model()
 
     def build_model(self):
         df = pd.read_csv(self.filePath, encoding='utf-8')
@@ -70,6 +70,7 @@ class Window(qtw.QMainWindow):
         self.reg.fit(X_train, y_train)
         self.data_frame = df
         self.plot_graph()
+        self.statusBar().showMessage("")
 
     def plot_graph(self):
         columns = list(self.data_frame.columns)
@@ -78,17 +79,21 @@ class Window(qtw.QMainWindow):
         self.static_canvas.draw()
 
     def prediction(self):
-        value = self.read_table_data()
-        value = np.array(value).reshape(1,-1)
-        self.predict_input = StandardScaler().fit_transform(value)
-        self.predict_value = self.reg.predict(value)
-        self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
+        try:
+            value = self.read_table_data()
+            value = np.array(value).reshape(1, -1)
+            self.predict_input = StandardScaler().fit_transform(value)
+            self.predict_value = self.reg.predict(value)
+            self.ui.resultOutput.clear()
+            self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
+        except:
+            self.ui.statusbar.showMessage("")
 
     def read_table_data(self):
         item = []
         row_count = self.ui.predictionTableWidget.rowCount()
         for row in range(row_count):
-            item.append(float(self.ui.predictionTableWidget.item(row,0).text()))
+            item.append(float(self.ui.predictionTableWidget.item(row, 0).text()))
         return item
 
 
