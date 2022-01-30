@@ -59,8 +59,11 @@ class Window(qtw.QMainWindow):
         self.show()
 
     def find_csv(self):
-        self.filePath = qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
-        self.build_model()
+        try:
+            self.filePath = qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
+            self.build_model()
+        except:
+            self.ui.statusbar.showMessage("No dataset selected")
 
     def build_model(self):
         df = pd.read_csv(self.filePath, encoding='utf-8')
