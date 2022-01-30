@@ -1,16 +1,19 @@
 import sys
 from template import Ui_MainWindow
-from PyQt6 import QtCore as qtc
+# from PyQt6 import QtCore as qtc
 from PyQt6 import QtWidgets as qtw
 
-import numpy as np
+# import numpy as np
+# for exe file compilation
+# import sklearn.utils._typedefs
+
 
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
