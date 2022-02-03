@@ -26,6 +26,7 @@ class Window(qtw.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.resize(1000, 650)
+        self.std = None
 
         # Your code starts here
         self.filePath = None
@@ -69,7 +70,8 @@ class Window(qtw.QMainWindow):
         df_dropna = df.dropna()
         X = df_dropna.iloc[:, 0:-1]
         y = df_dropna.iloc[:, -1]
-        X = StandardScaler().fit_transform(X)
+        self.std = StandardScaler()
+        X = self.std.fit_transform(X)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
         self.reg = SVC()
         self.reg.fit(X_train, y_train)
@@ -87,10 +89,11 @@ class Window(qtw.QMainWindow):
         try:
             value = self.read_table_data()
             value = np.array(value).reshape(1, -1)
-            self.predict_input = StandardScaler().fit_transform(value)
-            self.predict_value = self.reg.predict(value)
+            self.predict_input = self.std.transform(value)
+            self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
+            print(self.predict_value)
         except:
             self.ui.statusbar.showMessage("")
 
