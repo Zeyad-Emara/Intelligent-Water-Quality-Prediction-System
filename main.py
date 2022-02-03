@@ -71,13 +71,14 @@ class Window(qtw.QMainWindow):
         X = df_dropna.iloc[:, 0:-1]
         y = df_dropna.iloc[:, -1]
         self.std = StandardScaler()
-        X = self.std.fit_transform(X)
+        X = self.std.fit_transform(X.values)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
         self.reg = SVC()
         self.reg.fit(X_train, y_train)
         self.data_frame = df
         self.plot_graph()
         self.statusBar().showMessage("")
+        print(self.reg.score(X_test,y_test))
 
     def plot_graph(self):
         columns = list(self.data_frame.columns)
