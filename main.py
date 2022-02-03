@@ -78,7 +78,6 @@ class Window(qtw.QMainWindow):
         self.data_frame = df
         self.plot_graph()
         self.statusBar().showMessage("")
-        print(self.reg.score(X_test,y_test))
 
     def plot_graph(self):
         columns = list(self.data_frame.columns)
@@ -94,7 +93,6 @@ class Window(qtw.QMainWindow):
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
-            print(self.predict_value)
         except:
             self.ui.statusbar.showMessage("")
 
