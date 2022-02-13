@@ -4,10 +4,10 @@ from template import Ui_MainWindow
 from PyQt6 import QtWidgets as qtw
 
 # for exe file compilation
-import sklearn.utils._typedefs
+#import sklearn.utils._typedefs
 
 
-from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
+from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
 import numpy as np
