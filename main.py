@@ -43,9 +43,9 @@ class Window(Qtw.QMainWindow):
         # Draw canvas and Toolbar
         self.layout = Qtw.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
-        #self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
+        self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.subplots()
-        #self.layout.addWidget(self.static_canvas)
+        self.layout.addWidget(self.static_canvas)
         self.ui.graphWidget.setLayout(self.layout)
 
         # add import button function
