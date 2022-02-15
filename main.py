@@ -41,10 +41,10 @@ class Window(qtw.QMainWindow):
         # Draw canvas and Toolbar
         self.layout = qtw.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
-        self.layout.addWidget(NavigationToolbar(self.static_canvas, self))
-        self.graph = self.static_canvas.figure.subplots()
+        self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
+        self.graph = self.static_canvas.figure.add_subplot(111)
         self.layout.addWidget(self.static_canvas)
-        self.ui.graphWidget.setLayout(self.layout)
+        self.ui.verticalLayout_2.addLayout(self.layout)
 
         # add import button function
         self.ui.importPushButton.clicked.connect(self.find_csv)
@@ -62,11 +62,11 @@ class Window(qtw.QMainWindow):
         try:
             self.filePath = qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
             self.build_model()
-        except:
+        except Exception:
             self.ui.statusbar.showMessage("No dataset selected")
 
     def build_model(self):
-        df = pd.read_csv(self.filePath, encoding='utf-8')
+        df = pd.read_csv(self.filePath)
         df_dropna = df.dropna()
         X = df_dropna.iloc[:, 0:-1]
         y = df_dropna.iloc[:, -1]
@@ -83,6 +83,7 @@ class Window(qtw.QMainWindow):
         columns = list(self.data_frame.columns)
         df = pd.read_csv(self.filePath, usecols=columns)
         df.plot(ax=self.graph)
+        self.graph.legend().set_draggable(True)
         self.static_canvas.draw()
 
     def prediction(self):
@@ -93,8 +94,8 @@ class Window(qtw.QMainWindow):
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
-        except:
-            self.ui.statusbar.showMessage("")
+        except Exception:
+            self.ui.statusbar.showMessage("Ops... Something went wrong")
 
     def read_table_data(self):
         item = []
