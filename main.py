@@ -1,7 +1,7 @@
 import sys
 from template import Ui_MainWindow
 # from PyQt6 import QtCore as qtc
-from PyQt6 import QtWidgets as qtw
+from PyQt6 import QtWidgets as Qtw
 
 # for exe file compilation
 import sklearn.utils._typedefs
@@ -18,8 +18,10 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
+from joblib import dump, load
 
-class Window(qtw.QMainWindow):
+
+class Window(Qtw.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(Window, self).__init__(*args, **kwargs)
@@ -39,7 +41,7 @@ class Window(qtw.QMainWindow):
         self.ui.statusbar.showMessage("No dataset found")
 
         # Draw canvas and Toolbar
-        self.layout = qtw.QVBoxLayout()
+        self.layout = Qtw.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
         self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.add_subplot(111)
@@ -60,13 +62,12 @@ class Window(qtw.QMainWindow):
 
     def find_csv(self):
         try:
-            self.filePath = qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
-            self.build_model()
+            self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         except Exception:
             self.ui.statusbar.showMessage("No dataset selected")
 
     def build_model(self):
-        df = pd.read_csv(self.filePath)
+        df = pd.read_csv(self.filePath, encoding='utf-8')
         df_dropna = df.dropna()
         X = df_dropna.iloc[:, 0:-1]
         y = df_dropna.iloc[:, -1]
@@ -88,14 +89,17 @@ class Window(qtw.QMainWindow):
 
     def prediction(self):
         try:
+            self.reg = load('resource/WQIModelv1.pkl')
+            self.std = load('resource/StdScaler.pkl')
             value = self.read_table_data()
             value = np.array(value).reshape(1, -1)
             self.predict_input = self.std.transform(value)
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
-        except Exception:
-            self.ui.statusbar.showMessage("Ops... Something went wrong")
+        except Exception as e:
+            print(e)
+            self.ui.statusbar.showMessage("fail")
 
     def read_table_data(self):
         item = []
@@ -106,6 +110,6 @@ class Window(qtw.QMainWindow):
 
 
 if __name__ == "__main__":
-    app = qtw.QApplication(sys.argv)
+    app = Qtw.QApplication(sys.argv)
     window = Window()
     sys.exit(app.exec())
