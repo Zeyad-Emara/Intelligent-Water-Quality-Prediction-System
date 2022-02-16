@@ -67,7 +67,7 @@ class Window(Qtw.QMainWindow):
         except:
             self.ui.statusbar.showMessage("No dataset selected")
 
-    def build_model(self):
+    def build_model(self): #technically unused for now
         df = pd.read_csv(self.filePath, encoding='utf-8')
         df_dropna = df.dropna()
         X = df_dropna.iloc[:, 0:-1]
@@ -89,8 +89,8 @@ class Window(Qtw.QMainWindow):
 
     def prediction(self):
         try:
-            self.reg = load('resource/WQIModelv1.pkl')
-            self.std = load('resource/StdScaler.pkl')
+            self.reg = load('resource/models/WQIModelv1.pkl')
+            self.std = load('resource/models/StdScaler.pkl')
             value = self.read_table_data()
             value = np.array(value).reshape(1, -1)
             self.predict_input = self.std.transform(value)
