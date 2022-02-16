@@ -20,7 +20,6 @@ from sklearn.svm import SVC
 
 from joblib import dump, load
 
-
 class Window(Qtw.QMainWindow):
 
     def __init__(self, *args, **kwargs):
@@ -46,7 +45,7 @@ class Window(Qtw.QMainWindow):
         self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.add_subplot(111)
         self.layout.addWidget(self.static_canvas)
-        self.ui.verticalLayout_2.addLayout(self.layout)
+        self.ui.verticalLayout.addLayout(self.layout)
 
         # add import button function
         self.ui.importPushButton.clicked.connect(self.find_csv)
@@ -65,27 +64,33 @@ class Window(Qtw.QMainWindow):
             self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         except Exception:
             self.ui.statusbar.showMessage("No dataset selected")
-
-    def build_model(self):
-        df = pd.read_csv(self.filePath, encoding='utf-8')
-        df_dropna = df.dropna()
-        X = df_dropna.iloc[:, 0:-1]
-        y = df_dropna.iloc[:, -1]
-        self.std = StandardScaler()
-        X = self.std.fit_transform(X.values)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
-        self.reg = SVC()
-        self.reg.fit(X_train, y_train)
-        self.data_frame = df
+        self.ui.statusbar.showMessage("")
         self.plot_graph()
-        self.statusBar().showMessage("")
+
+    # def build_model(self):
+    #     df = pd.read_csv(self.filePath, encoding='utf-8')
+    #     df_dropna = df.dropna()
+    #     X = df_dropna.iloc[:, 0:-1]
+    #     y = df_dropna.iloc[:, -1]
+    #     self.std = StandardScaler()
+    #     X = self.std.fit_transform(X.values)
+    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
+    #     self.reg = SVC()
+    #     self.reg.fit(X_train, y_train)
+    #     self.data_frame = df
+    #     self.plot_graph()
+    #     self.statusBar().showMessage("")
 
     def plot_graph(self):
-        columns = list(self.data_frame.columns)
-        df = pd.read_csv(self.filePath, usecols=columns)
-        df.plot(ax=self.graph)
-        self.graph.legend().set_draggable(True)
-        self.static_canvas.draw()
+        try:
+            self.data_frame = pd.read_csv(self.filePath, encoding='utf-8')
+            columns = list(self.data_frame.columns)
+            df = pd.read_csv(self.filePath, usecols=columns)
+            df.plot(ax=self.graph)
+            self.graph.legend().set_draggable(True)
+            self.static_canvas.draw()
+        except Exception:
+            self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
         try:
@@ -97,9 +102,8 @@ class Window(Qtw.QMainWindow):
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
-        except Exception as e:
-            print(e)
-            self.ui.statusbar.showMessage("fail")
+        except Exception:
+            self.ui.statusbar.showMessage("Failed to predict")
 
     def read_table_data(self):
         item = []

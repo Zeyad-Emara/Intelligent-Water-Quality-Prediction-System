@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="2" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -33,7 +33,7 @@
      </layout>
     </item>
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="dataAnalysisLabel">
         <property name="text">
@@ -179,27 +179,12 @@
         </attribute>
         <row>
          <property name="text">
-          <string>ph</string>
+          <string>Dissolved Oxygen</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Hardness</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Solids</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Chloramines</string>
-         </property>
-        </row>
-        <row>
-         <property name="text">
-          <string>Sulfate</string>
+          <string>pH</string>
          </property>
         </row>
         <row>
@@ -209,17 +194,22 @@
         </row>
         <row>
          <property name="text">
-          <string>Organic carbon</string>
+          <string>BOD</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Trihalomethanes</string>
+          <string>Nitrate</string>
          </property>
         </row>
         <row>
          <property name="text">
-          <string>Turbidity</string>
+          <string>Fecal Coliform</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>Total Coliform</string>
          </property>
         </row>
         <column>
