@@ -1,8 +1,9 @@
 import sys
 
-from PyQt6.QtWidgets import QLineEdit, QItemDelegate, QWidget, QComboBox, QTableView, QStyledItemDelegate
+from PyQt6.QtWidgets import QLineEdit, QItemDelegate, QWidget, QComboBox, QTableView, QStyledItemDelegate, QDialog
 
 from template import Ui_MainWindow
+from about_template import Ui_Dialog as AboutDialog
 from PyQt6.QtCore import QRegularExpression, QRect
 from PyQt6 import QtWidgets as Qtw, QtCore, QtGui
 from PyQt6.QtGui import QDoubleValidator, QValidator, QRegularExpressionValidator, QPen, QColor
@@ -77,8 +78,18 @@ class Window(Qtw.QMainWindow):
         except Exception:
             self.ui.statusbar.showMessage("No modal detected")
 
+        # add about page
+        self.ui.actionAbout.triggered.connect(self.build_about)
+
         # Your code ends here
         self.show()
+
+    def build_about(self):
+        dialog = QDialog(self)
+        dialog.ui = AboutDialog()
+        dialog.ui.setupUi(dialog)
+        dialog.exec()
+        dialog.show()
 
     def find_csv(self):
         try:
@@ -87,20 +98,6 @@ class Window(Qtw.QMainWindow):
             self.ui.statusbar.showMessage("No dataset selected")
         self.ui.statusbar.showMessage("")
         self.plot_graph()
-
-    # def build_model(self):
-    #     df = pd.read_csv(self.filePath, encoding='utf-8')
-    #     df_dropna = df.dropna()
-    #     X = df_dropna.iloc[:, 0:-1]
-    #     y = df_dropna.iloc[:, -1]
-    #     self.std = StandardScaler()
-    #     X = self.std.fit_transform(X.values)
-    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
-    #     self.reg = SVC()
-    #     self.reg.fit(X_train, y_train)
-    #     self.data_frame = df
-    #     self.plot_graph()
-    #     self.statusBar().showMessage("")
 
     def plot_graph(self):
         try:
@@ -191,8 +188,11 @@ class Window(Qtw.QMainWindow):
             mean = self.data_frame['PH'].mean()
             # self.ui.predictionTableWidget.item(1, 0).setData(1)
             self.ui.predictionTableWidget.item(1, 0).setText(str(mean))
+            self.ui.predictionTableWidget.item(1, 0).setToolTip("Suggested value")
+            self.ui.actionAnalysis_data.setStatusTip("hello")
         except Exception as e:
             print(e)
+
 
 class MyToolBar(NavigationToolbar):
 
