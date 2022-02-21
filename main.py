@@ -1,7 +1,11 @@
 import sys
+
+from PyQt6.QtWidgets import QLineEdit, QItemDelegate, QWidget, QComboBox, QTableView, QStyledItemDelegate
+
 from template import Ui_MainWindow
-# from PyQt6 import QtCore as qtc
-from PyQt6 import QtWidgets as Qtw
+from PyQt6.QtCore import QRegularExpression, QRect
+from PyQt6 import QtWidgets as Qtw, QtCore, QtGui
+from PyQt6.QtGui import QDoubleValidator, QValidator, QRegularExpressionValidator, QPen, QColor
 
 # for exe file compilation
 import sklearn.utils._typedefs
@@ -19,6 +23,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from joblib import dump, load
+
 
 class Window(Qtw.QMainWindow):
 
@@ -42,7 +47,7 @@ class Window(Qtw.QMainWindow):
         # Draw canvas and Toolbar
         self.layout = Qtw.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
-        self.layout.addWidget(NavigationToolbar(self.static_canvas, self.centralWidget()))
+        self.layout.addWidget(MyToolBar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.add_subplot(111)
         self.layout.addWidget(self.static_canvas)
         self.ui.verticalLayout.addLayout(self.layout)
@@ -51,10 +56,26 @@ class Window(Qtw.QMainWindow):
         self.ui.importPushButton.clicked.connect(self.find_csv)
 
         # add predicting value function
+        # self.ui.predictPushButton.setEnabled(False)
         self.ui.predictPushButton.clicked.connect(self.prediction)
+
+        # add autofill function
+        # self.ui.autofillPushButton.setEnabled(False)
+        self.ui.autofillPushButton.clicked.connect(self.auto_fill)
 
         # set result display area read only
         self.ui.resultOutput.setReadOnly(True)
+
+        # restrict user's input in the table
+        delegate = TableWidgetDelegate()
+        self.ui.predictionTableWidget.setItemDelegateForColumn(0, delegate)
+
+        # add default model
+        try:
+            self.reg = load('resource/WQIModelv1.pkl')
+            self.std = load('resource/StdScaler.pkl')
+        except Exception:
+            self.ui.statusbar.showMessage("No modal detected")
 
         # Your code ends here
         self.show()
@@ -88,29 +109,134 @@ class Window(Qtw.QMainWindow):
             df = pd.read_csv(self.filePath, usecols=columns)
             df.plot(ax=self.graph)
             self.graph.legend().set_draggable(True)
+            self.graph.axes.set_xlabel('X Axis')
+            self.graph.axes.set_ylabel('Y Axis')
+            self.graph.axes.set_title('Title')
             self.static_canvas.draw()
+            self.ui.predictPushButton.setEnabled(True)
+            self.ui.autofillPushButton.setEnabled(True)
         except Exception:
             self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
-        try:
-            self.reg = load('resource/WQIModelv1.pkl')
-            self.std = load('resource/StdScaler.pkl')
-            value = self.read_table_data()
+        value = self.read_table_data()
+        if value:
             value = np.array(value).reshape(1, -1)
             self.predict_input = self.std.transform(value)
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
-        except Exception:
-            self.ui.statusbar.showMessage("Failed to predict")
 
     def read_table_data(self):
+        self.ui.statusbar.showMessage("")
+        # dissolved oxygen, pH, conductivity, B.O.D., Nitrate, Fecal Coliform, Total Coliform
         item = []
         row_count = self.ui.predictionTableWidget.rowCount()
+        # validator = QDoubleValidator(0,100,14)
         for row in range(row_count):
-            item.append(float(self.ui.predictionTableWidget.item(row, 0).text()))
-        return item
+            # check none input
+            if self.ui.predictionTableWidget.item(row, 0) is None:
+                self.ui.statusbar.showMessage("Please fill up all the rows")
+                break
+            value = float(self.ui.predictionTableWidget.item(row, 0).text())
+            # check row 0
+            if row == 0 and value not in range(-1, 100):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 1
+            if row == 1 and value not in range(-1, 14):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 2
+            if row == 2 and value not in range(-1, 1000):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 3
+            if row == 3 and value not in range(-1, 100):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 4
+            if row == 4 and value not in range(-1, 20):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 5
+            if row == 5 and value not in range(-1, 10000):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            # check row 6
+            if row == 6 and value not in range(-1, 100000):
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                continue
+            else:
+                self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
+            item.append(value)
+        if len(item) == 7:
+            return item
+        return False
+
+    def auto_fill(self):
+        try:
+            mean = self.data_frame['PH'].mean()
+            # self.ui.predictionTableWidget.item(1, 0).setData(1)
+            self.ui.predictionTableWidget.item(1, 0).setText(str(mean))
+        except Exception as e:
+            print(e)
+
+class MyToolBar(NavigationToolbar):
+
+    def zoom(self, *args):
+        super().zoom(*args)
+        self._update_buttons_checked()
+        self.locLabel.setText("")
+
+    def pan(self, *args):
+        super().pan(*args)
+        self._update_buttons_checked()
+        self.locLabel.setText("")
+
+    def set_message(self, s):
+        pass
+        # self.message.emit(s)
+        # if self.coordinates:
+        #     self.locLabel.setText(s)
+
+
+class TableWidgetDelegate(QItemDelegate):
+    def createEditor(self, parent: QWidget, option, index: QtCore.QModelIndex) -> QWidget:
+        editor = QLineEdit(parent=parent)
+        pattern = '[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
+        reg = QRegularExpression(pattern)
+        reg_validator = QRegularExpressionValidator(reg)
+        editor.setValidator(reg_validator)
+        return editor
+
+
+# class TestDelegate(QStyledItemDelegate):
+#     def __init__(self):
+#         super().__init__()
+#
+#     def paint(self, painter: QtGui.QPainter, option: 'QStyleOptionViewItem', index: QtCore.QModelIndex) -> None:
+#         super().paint(painter, option, index)
+#
+#         painter.save()
+#         pen = QPen(QColor("red"))
+#         qr = QRect(option.rect)
+#         qr.setWidth(pen.width())
+#         painter.setPen(pen)
+#         painter.drawRect(qr)
+#         painter.restore()
 
 
 if __name__ == "__main__":
