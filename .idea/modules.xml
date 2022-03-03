@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Intelligent-Water-Quality-Prediction-System.iml" filepath="$PROJECT_DIR$/.idea/Intelligent-Water-Quality-Prediction-System.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MyFirstGUI.iml" filepath="$PROJECT_DIR$/.idea/MyFirstGUI.iml" />
     </modules>
   </component>
 </project>
