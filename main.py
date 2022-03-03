@@ -13,7 +13,6 @@ from PyQt6.QtGui import QDoubleValidator, QValidator, QRegularExpressionValidato
 import sklearn.utils._typedefs
 from PyQt6 import QtCore, QtGui, QtWidgets
 
-
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
@@ -75,8 +74,8 @@ class Window(Qtw.QMainWindow):
 
         # add default model
         try:
-            self.reg = load('resource/WQIModelv1.pkl')
-            self.std = load('resource/StdScaler.pkl')
+            self.reg = load('resource/models/WQIModelv2_1.pkl')
+            self.std = load('resource/models/StdScaler_time.pkl')
         except Exception:
             self.ui.statusbar.showMessage("No modal detected")
 
@@ -138,10 +137,16 @@ class Window(Qtw.QMainWindow):
     def prediction(self):
 
         try:
-            self.reg = load('resource/models/WQIModelv1.pkl')
-            self.std = load('resource/models/StdScaler.pkl')
-            
+            # self.reg = load('resource/models/WQIModelv1.pkl')
+            # self.std = load('resource/models/StdScaler.pkl')
+
             value = self.read_table_data()
+
+            # print(value)
+
+            if len(value) < 10:
+                raise Exception("Not enough variables")
+
             value = np.array(value).reshape(1, -1)
             self.predict_input = self.std.transform(value)
             self.predict_value = self.reg.predict(self.predict_input)
@@ -354,11 +359,12 @@ class Window(Qtw.QMainWindow):
         self.ui.resultOutput.setObjectName("resultOutput")
         self.ui.resultDockWidget.setWidget(self.ui.resultDockWidgetContents)
         self.ui.resultLabel.setText("Result")
-        self.ui.resultOutput.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                     "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                     "p, li { white-space: pre-wrap; }\n"
-                                     "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-                                     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>")
+        self.ui.resultOutput.setHtml(
+            "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+            "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+            "p, li { white-space: pre-wrap; }\n"
+            "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+            "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>")
         self.ui.resultOutput.setReadOnly(True)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.ui.resultDockWidget)
 
