@@ -103,8 +103,21 @@ class Window(Qtw.QMainWindow):
             self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         except Exception:
             self.ui.statusbar.showMessage("No dataset selected")
+
+
+    def build_model(self): #technically unused for now
+        df = pd.read_csv(self.filePath, encoding='utf-8')
+        df_dropna = df.dropna()
+        X = df_dropna.iloc[:, 0:-1]
+        y = df_dropna.iloc[:, -1]
+        self.std = StandardScaler()
+        X = self.std.fit_transform(X.values)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
+        self.reg = SVC()
+        self.reg.fit(X_train, y_train)
+        self.data_frame = df
         self.ui.statusbar.showMessage("")
-        self.plot_graph()
+        #self.plot_graph()
 
     def plot_graph(self):
         try:
@@ -123,13 +136,20 @@ class Window(Qtw.QMainWindow):
             self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
-        value = self.read_table_data()
-        if value:
+
+        try:
+            self.reg = load('resource/models/WQIModelv1.pkl')
+            self.std = load('resource/models/StdScaler.pkl')
+            
+            value = self.read_table_data()
             value = np.array(value).reshape(1, -1)
             self.predict_input = self.std.transform(value)
             self.predict_value = self.reg.predict(self.predict_input)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
+        except Exception as e:
+            print(e)
+            self.ui.statusbar.showMessage("fail")
 
     def read_table_data(self):
         self.ui.statusbar.showMessage("")
