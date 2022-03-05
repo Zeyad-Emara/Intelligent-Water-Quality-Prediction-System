@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -42,14 +42,16 @@ class Window(Qtw.QMainWindow):
         self.predict_input = None
         self.predict_value = None
         self.reg = None
-        self.data_frame = None
+        self.data_frame = pd.read_csv("resource/water_dataX_wqi_cleaned.csv")
+        self.new_x_axis = 'Dissolved Oxygen (mg/l)'
+        self.new_y_axis = 'Dissolved Oxygen (mg/l)'
 
         # Update statusbar
         self.ui.statusbar.showMessage("No dataset found")
 
         # Draw canvas and Toolbar
         self.layout = Qtw.QVBoxLayout()
-        self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
+        self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(5, 10)))
         self.layout.addWidget(MyToolBar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.add_subplot(111)
         self.layout.addWidget(self.static_canvas)
@@ -72,6 +74,11 @@ class Window(Qtw.QMainWindow):
         # restrict user's input in the table
         self.delegate = TableWidgetDelegate()
         self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
+
+        # plot different graph
+        self.ui.xAxisComboBox.currentTextChanged.connect(self.change_x_axis)
+        self.ui.yAxisComboBox.currentTextChanged.connect(self.change_y_axis)
+        self.ui.plotPushButton.clicked.connect(self.change_graph_axis)
 
         # add default model
         try:
@@ -97,6 +104,28 @@ class Window(Qtw.QMainWindow):
 
         # Your code ends here
         self.show()
+
+    def change_x_axis(self, x_axis):
+        self.new_x_axis = x_axis
+
+    def change_y_axis(self, y_axis):
+        self.new_y_axis = y_axis
+
+    def change_graph_axis(self):
+        column = {'Dissolved Oxygen (mg/l)': 'D.O. (mg/l)',
+                  'pH': 'PH',
+                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY (µmhos/cm)',
+                  'B.O.D. (mg/l)': 'B.O.D. (mg/l)',
+                  'Nitrate (mg/l)': 'NITRATE N+ NITRITEN (mg/l)',
+                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM (MPN/100ml)',
+                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM (MPN/100ml)Mean'
+                  }
+
+        try:
+            self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis], ax=self.graph)
+            self.static_canvas.draw()
+        except Exception as e:
+            print(e)
 
     def find_csv(self):
         try:
@@ -334,11 +363,15 @@ class Window(Qtw.QMainWindow):
         self.ui.resultOutput.setObjectName("resultOutput")
         self.ui.resultDockWidget.setWidget(self.ui.resultDockWidgetContents)
         self.ui.resultLabel.setText("Result")
-        self.ui.resultOutput.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.ui.resultOutput.setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+                                     "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n "
                                      "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
                                      "p, li { white-space: pre-wrap; }\n"
-                                     "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-                                     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>")
+                                     "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; "
+                                     "font-weight:400; font-style:normal;\">\n "
+                                     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+                                     "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br "
+                                     "/></p></body></html>")
         self.ui.resultOutput.setReadOnly(True)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.ui.resultDockWidget)
 
