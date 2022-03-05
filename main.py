@@ -41,7 +41,9 @@ class Window(Qtw.QMainWindow):
         self.predict_input = None
         self.predict_value = None
         self.reg = None
-        self.data_frame = None
+        self.data_frame = pd.read_csv("resource/water_dataX_wqi_cleaned.csv")
+        self.new_x_axis = 'Dissolved Oxygen (mg/l)'
+        self.new_y_axis = 'Dissolved Oxygen (mg/l)'
 
         # Update statusbar
         self.ui.statusbar.showMessage("No dataset found")
@@ -72,6 +74,11 @@ class Window(Qtw.QMainWindow):
         self.delegate = TableWidgetDelegate()
         self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
 
+        # plot different graph
+        self.ui.xAxisComboBox.currentTextChanged.connect(self.change_x_axis)
+        self.ui.yAxisComboBox.currentTextChanged.connect(self.change_y_axis)
+        self.ui.plotPushButton.clicked.connect(self.change_graph_axis)
+
         # add default model
         try:
             self.reg = load('resource/models/WQIModelv2_1.pkl')
@@ -96,6 +103,28 @@ class Window(Qtw.QMainWindow):
 
         # Your code ends here
         self.show()
+
+    def change_x_axis(self, x_axis):
+        self.new_x_axis = x_axis
+
+    def change_y_axis(self, y_axis):
+        self.new_y_axis = y_axis
+
+    def change_graph_axis(self):
+        column = {'Dissolved Oxygen (mg/l)': 'D.O. (mg/l)',
+                  'pH': 'PH',
+                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY (µmhos/cm)',
+                  'B.O.D. (mg/l)': 'B.O.D. (mg/l)',
+                  'Nitrate (mg/l)': 'NITRATE N+ NITRITEN (mg/l)',
+                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM (MPN/100ml)',
+                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM (MPN/100ml)Mean'
+                  }
+
+        try:
+            self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis], ax=self.graph)
+            self.static_canvas.draw()
+        except Exception as e:
+            print(e)
 
     def find_csv(self):
         try:
