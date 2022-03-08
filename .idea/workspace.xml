@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="Added training data and cleaned up resources folder">
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="updated UI and code for supporting new model. non-functioning">
+      <change beforePath="$PROJECT_DIR$/.idea/MyFirstGUI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MyFirstGUI.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resource/models/StdScaler_time.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/resource/models/StdScaler_time.pkl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,7 +16,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Adding_Linear_Regression_Model" />
+        <entry key="$PROJECT_DIR$" value="prototype1" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -28,11 +32,12 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource/models" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource\models" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System" />
     </key>
@@ -64,17 +69,17 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Intelligent-Water-Quality-Prediction-System" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\USER\PycharmProjects\Test\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -170,7 +175,28 @@
       <option name="project" value="LOCAL" />
       <updated>1644986510461</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="cant push without committing this">
+      <created>1646294293377</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1646294293377</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Added model for time scaling and prediction">
+      <created>1646324487476</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1646324487476</updated>
+    </task>
+    <task id="LOCAL-00007" summary="updated UI and code for supporting new model. non-functioning">
+      <created>1646324565941</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1646324565941</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -190,7 +216,10 @@
     <MESSAGE value="Working Predictiing model" />
     <MESSAGE value="Added back in problematic lines." />
     <MESSAGE value="Added training data and cleaned up resources folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added training data and cleaned up resources folder" />
+    <MESSAGE value="cant push without committing this" />
+    <MESSAGE value="Added model for time scaling and prediction" />
+    <MESSAGE value="updated UI and code for supporting new model. non-functioning" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated UI and code for supporting new model. non-functioning" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>

@@ -40,12 +40,12 @@ class Window(Qtw.QMainWindow):
         self.filePath = None
         self.predict_input = None
         self.predict_value = None
-        self.std = None
-        self.reg = None
+        self.scaler = None
+        self.predicting_model = None
         # add default model
         try:
-            self.reg = load('resource/models/WQIModelv2_1.pkl')
-            self.std = load('resource/models/StdScaler_time.pkl')
+            self.predicting_model = load('resource/models/WQIModelv2_1.pkl')
+            self.scaler = load('resource/models/StdScaler_time.pkl')
         except Exception:
             # add error window in following version if needed
             self.ui.statusbar.showMessage("Default modal not detected")
@@ -149,6 +149,11 @@ class Window(Qtw.QMainWindow):
     #     self.ui.statusbar.showMessage("")
     #     self.plot_graph()
 
+    #def retrain_model(self):
+
+
+
+
     # def plot_graph(self):
     #     try:
     #         self.data_frame = pd.read_csv(self.filePath, encoding='utf-8')
@@ -167,15 +172,11 @@ class Window(Qtw.QMainWindow):
 
     def prediction(self):
         try:
-            # self.reg = load('resource/models/WQIModelv1.pkl')
-            # self.std = load('resource/models/StdScaler.pkl')
             value = self.read_table_data()
             if len(value) == 10:
                 value = np.array(value).reshape(1, -1)
-                # X has 10 features, but StandardScaler is expecting 7 features as input.
-                # X has 7 features, but SVR is expecting 10 features as input.
-                self.predict_input = self.std.transform(value)
-                self.predict_value = self.reg.predict(self.predict_input)
+                self.predict_input = self.scaler.transform(value)
+                self.predict_value = self.predicting_model.predict(self.predict_input)
                 self.ui.resultOutput.clear()
                 self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
             else:
@@ -204,17 +205,17 @@ class Window(Qtw.QMainWindow):
         return item
 
     def auto_fill(self):
-        # try:
-        column = ['', '', '', 'D.O. (mg/l)', 'PH', 'CONDUCTIVITY (µmhos/cm)', 'B.O.D. (mg/l)',
-                  'NITRATE N+ NITRITEN (mg/l)', 'FECAL COLIFORM (MPN/100ml)', 'TOTAL COLIFORM (MPN/100ml)Mean']
-        for idx in range(3, 10):
-            if round(float(self.ui.predictionTableWidget.item(idx, 0).text())) == 0:
-                mean = self.data_frame[column[idx]].mean()
-                self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
-                self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
-                # self.ui.predictionTableWidget.item(idx, 0).setToolTip("Suggested value")
-        # except Exception as e:
-        #     print(e)
+        try:
+            # column = ['', '', '', 'D.O. (mg/l)', 'PH', 'CONDUCTIVITY (µmhos/cm)', 'B.O.D. (mg/l)',
+            #          'NITRATE N+ NITRITEN (mg/l)', 'FECAL COLIFORM (MPN/100ml)', 'TOTAL COLIFORM (MPN/100ml)Mean']
+            for idx in range(0, 10):
+                if round(float(self.ui.predictionTableWidget.item(idx, 0).text())) == 0:
+                    mean = self.scaler.mean_[idx]
+                    self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
+                    self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
+                    # self.ui.predictionTableWidget.item(idx, 0).setToolTip("Suggested value")
+        except Exception as e:
+            print(e)
 
     def import_docker(self):
         self.ui.importDockWidget = QtWidgets.QDockWidget(self)
