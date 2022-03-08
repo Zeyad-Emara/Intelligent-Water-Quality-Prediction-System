@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>913</width>
-    <height>630</height>
+    <width>970</width>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,159 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="xAxisLabel">
+        <property name="minimumSize">
+         <size>
+          <width>35</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>X-Axis:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="xAxisComboBox">
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>20</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Dissolved Oxygen (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>pH</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Conductivity (µmhos/cm)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>B.O.D. (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nitrate (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Fecal Coliform (MPN/100ml)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Total Coliform (MPN/100ml)</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="yAxisLabel">
+        <property name="minimumSize">
+         <size>
+          <width>35</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Y-Axis:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="yAxisComboBox">
+        <property name="minimumSize">
+         <size>
+          <width>160</width>
+          <height>20</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Dissolved Oxygen (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>pH</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Conductivity (µmhos/cm)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>B.O.D. (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Nitrate (mg/l)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Fecal Coliform (MPN/100ml)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Total Coliform (MPN/100 ml)</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="plotPushButton">
+        <property name="minimumSize">
+         <size>
+          <width>70</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Plot</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
     <item row="2" column="0">
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -63,7 +214,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>913</width>
+     <width>970</width>
      <height>21</height>
     </rect>
    </property>
@@ -71,14 +222,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuImport">
-     <property name="title">
-      <string>Import</string>
-     </property>
-     <addaction name="actionTraining_data"/>
-     <addaction name="actionAnalysis_data"/>
-    </widget>
-    <addaction name="menuImport"/>
+    <addaction name="actionImport_data"/>
     <addaction name="actionPredict"/>
     <addaction name="actionClose"/>
    </widget>
@@ -96,8 +240,15 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuretrian">
+    <property name="title">
+     <string>Model</string>
+    </property>
+    <addaction name="actionRe_train"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuretrian"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -156,7 +307,7 @@
    <property name="minimumSize">
     <size>
      <width>316</width>
-     <height>322</height>
+     <height>330</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -173,13 +324,6 @@
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="predictionLabel">
-        <property name="text">
-         <string>Prediction</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="0">
        <widget class="QPushButton" name="autofillPushButton">
         <property name="text">
@@ -191,6 +335,13 @@
        <widget class="QPushButton" name="predictPushButton">
         <property name="text">
          <string>Predict</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="predictionLabel">
+        <property name="text">
+         <string>Prediction</string>
         </property>
        </widget>
       </item>
@@ -258,6 +409,21 @@
         </attribute>
         <row>
          <property name="text">
+          <string>WQI 1 year</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>WQI 2 years</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
+          <string>WQI 3 years</string>
+         </property>
+        </row>
+        <row>
+         <property name="text">
           <string>Dissolved Oxygen (mg/l)</string>
          </property>
         </row>
@@ -295,7 +461,90 @@
          <property name="text">
           <string>Value</string>
          </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
         </column>
+        <item row="0" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="1" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="2" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="3" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="4" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="5" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="6" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="7" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="8" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
+        <item row="9" column="0">
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignTrailing|AlignVCenter</set>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>
@@ -306,7 +555,7 @@
    <property name="minimumSize">
     <size>
      <width>316</width>
-     <height>170</height>
+     <height>130</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -319,7 +568,7 @@
        <x>10</x>
        <y>10</y>
        <width>291</width>
-       <height>141</height>
+       <height>91</height>
       </rect>
      </property>
      <property name="orientation">
@@ -380,6 +629,16 @@ p, li { white-space: pre-wrap; }
   <action name="actionAnalysis_data">
    <property name="text">
     <string>Analysis data</string>
+   </property>
+  </action>
+  <action name="actionRe_train">
+   <property name="text">
+    <string>Re-train</string>
+   </property>
+  </action>
+  <action name="actionImport_data">
+   <property name="text">
+    <string>Import data</string>
    </property>
   </action>
  </widget>
