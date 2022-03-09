@@ -133,21 +133,6 @@ class Window(Qtw.QMainWindow):
         # except Exception:
         #     self.ui.statusbar.showMessage("No dataset selected")
 
-    # use for retrain model
-    # def build_model(self): #technically unused for now
-    #     df = pd.read_csv(self.filePath, encoding='utf-8')
-    #     df_dropna = df.dropna()
-    #     X = df_dropna.iloc[:, 0:-1]
-    #     y = df_dropna.iloc[:, -1]
-    #     self.std = StandardScaler()
-    #     X = self.std.fit_transform(X.values)
-    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=89)
-    #     self.reg = SVC()
-    #     self.reg.fit(X_train, y_train)
-    #     self.data_frame = df
-    #     self.ui.statusbar.showMessage("")
-    #     self.plot_graph()
-
     def retrain_model(self):
 
         training_data = self.preprocess_data()

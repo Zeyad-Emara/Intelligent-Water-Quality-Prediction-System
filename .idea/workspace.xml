@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="working predictor, using scaler to autofill">
-      <change afterPath="$PROJECT_DIR$/resource/Mock Data/MockData1.csv" afterDir="false" />
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="added preprocessng funtion for training">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -201,7 +200,21 @@
       <option name="project" value="LOCAL" />
       <updated>1646758131550</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added mock data">
+      <created>1646803861608</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1646803861608</updated>
+    </task>
+    <task id="LOCAL-00010" summary="added preprocessng funtion for training">
+      <created>1646803884368</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1646803884368</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -225,7 +238,9 @@
     <MESSAGE value="Added model for time scaling and prediction" />
     <MESSAGE value="updated UI and code for supporting new model. non-functioning" />
     <MESSAGE value="working predictor, using scaler to autofill" />
-    <option name="LAST_COMMIT_MESSAGE" value="working predictor, using scaler to autofill" />
+    <MESSAGE value="added mock data" />
+    <MESSAGE value="added preprocessng funtion for training" />
+    <option name="LAST_COMMIT_MESSAGE" value="added preprocessng funtion for training" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
