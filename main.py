@@ -107,13 +107,13 @@ class Window(Qtw.QMainWindow):
         self.new_y_axis = y_axis
 
     def change_graph_axis(self):
-        column = {'Dissolved Oxygen (mg/l)': 'D.O. (mg/l)',
+        column = {'Dissolved Oxygen (mg/l)': 'D.O.',
                   'pH': 'PH',
-                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY (µmhos/cm)',
-                  'B.O.D. (mg/l)': 'B.O.D. (mg/l)',
-                  'Nitrate (mg/l)': 'NITRATE N+ NITRITEN (mg/l)',
-                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM (MPN/100ml)',
-                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM (MPN/100ml)Mean'
+                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY',
+                  'B.O.D. (mg/l)': 'B.O.D.',
+                  'Nitrate (mg/l)': 'NITRATE',
+                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM',
+                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM'
                   }
         try:
             self.graph.clear()
@@ -133,7 +133,6 @@ class Window(Qtw.QMainWindow):
         # except Exception:
         #     self.ui.statusbar.showMessage("No dataset selected")
 
-
     # use for retrain model
     # def build_model(self): #technically unused for now
     #     df = pd.read_csv(self.filePath, encoding='utf-8')
@@ -149,10 +148,57 @@ class Window(Qtw.QMainWindow):
     #     self.ui.statusbar.showMessage("")
     #     self.plot_graph()
 
-    #def retrain_model(self):
+    def retrain_model(self):
+
+        training_data = self.preprocess_data()
+
+        training_data.to_csv(r'preprocessed_data.csv', index = False, header = True)
+
+
+    def preprocess_data(self):
+
+        data_frame_time = self.data_frame
+
+        # list of final columns to keep
+        final_table_columns = ['year','WQI','D.O.','PH','CONDUCTIVITY','B.O.D.','NITRATE','FECAL COLIFORM','TOTAL COLIFORM']
+        # remove unwanted columns
+        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
+        data_frame_time = data_frame_time.sort_values(by=['year'])
+        data_frame_time.dropna()
+
+        dupe = data_frame_time
+
+        # appending the features previous in time
+        data_frame_time['WQI t-1'] = dupe['WQI'].shift(1)
+        data_frame_time['WQI t-2'] = dupe['WQI'].shift(2)
+        data_frame_time['WQI t-3'] = dupe['WQI'].shift(3)
+        data_frame_time['D.O. t-1'] = dupe['D.O.'].shift(1)
+        data_frame_time['PH t-1'] = dupe['PH'].shift(1)
+        data_frame_time['CONDUCTIVITY t-1'] = dupe['CONDUCTIVITY'].shift(1)
+        data_frame_time['B.O.D. t-1'] = dupe['B.O.D.'].shift(1)
+        data_frame_time['NITRATE t-1'] = dupe['NITRATE'].shift(1)
+        data_frame_time['FECAL COLIFORM t-1'] = dupe['FECAL COLIFORM'].shift(1)
+        data_frame_time['TOTAL COLIFORM t-1'] = dupe['TOTAL COLIFORM'].shift(1)
+
+        final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
+                               'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
+
+        data_frame_time.dropna()
+        data_frame_time = data_frame_time.drop(
+            columns=[col for col in data_frame_time if col not in final_table_columns])
+
+        return data_frame_time
 
 
 
+    def get_feature(self, year, feature):
+
+        water_data = self.data_frame
+        try:
+            row = water_data.loc[(water_data['year'] == year)]
+            return row.iloc[0][feature]
+        except:
+            return None
 
     # def plot_graph(self):
     #     try:
@@ -171,6 +217,12 @@ class Window(Qtw.QMainWindow):
     #         self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
+
+        try:
+            self.preprocess_data()
+        except Exception as e:
+            print(e)
+
         try:
             value = self.read_table_data()
             if len(value) == 10:

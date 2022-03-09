@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="updated UI and code for supporting new model. non-functioning">
-      <change beforePath="$PROJECT_DIR$/.idea/MyFirstGUI.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MyFirstGUI.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="working predictor, using scaler to autofill">
+      <change afterPath="$PROJECT_DIR$/resource/Mock Data/MockData1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/models/StdScaler_time.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/resource/models/StdScaler_time.pkl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,13 +30,13 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource/models" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource\models" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource" />
+      <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource\models" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -196,7 +194,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646324565941</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="working predictor, using scaler to autofill">
+      <created>1646758131550</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1646758131550</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -219,7 +224,8 @@
     <MESSAGE value="cant push without committing this" />
     <MESSAGE value="Added model for time scaling and prediction" />
     <MESSAGE value="updated UI and code for supporting new model. non-functioning" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated UI and code for supporting new model. non-functioning" />
+    <MESSAGE value="working predictor, using scaler to autofill" />
+    <option name="LAST_COMMIT_MESSAGE" value="working predictor, using scaler to autofill" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
