@@ -97,6 +97,8 @@ class Window(Qtw.QMainWindow):
         self.ui.actionPrediction_widget.triggered.connect(self.prediction_docker)
         # add result docker widget function
         self.ui.actionResult_widget.triggered.connect(self.result_docker)
+        # add retrain model function
+        self.ui.actionRe_train.triggered.connect(self.retrain_model)
         # Your code ends here
         self.show()
 
@@ -246,7 +248,7 @@ class Window(Qtw.QMainWindow):
             # column = ['', '', '', 'D.O. (mg/l)', 'PH', 'CONDUCTIVITY (µmhos/cm)', 'B.O.D. (mg/l)',
             #          'NITRATE N+ NITRITEN (mg/l)', 'FECAL COLIFORM (MPN/100ml)', 'TOTAL COLIFORM (MPN/100ml)Mean']
             for idx in range(0, 10):
-                if round(float(self.ui.predictionTableWidget.item(idx, 0).text())) == 0:
+                if self.ui.predictionTableWidget.item(idx, 0).text() == "":
                     mean = self.scaler.mean_[idx]
                     self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
                     self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
@@ -409,26 +411,6 @@ class Window(Qtw.QMainWindow):
         item.setText("Value")
         __sortingEnabled = self.ui.predictionTableWidget.isSortingEnabled()
         self.ui.predictionTableWidget.setSortingEnabled(False)
-        item = self.ui.predictionTableWidget.item(0, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(1, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(2, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(3, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(4, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(5, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(6, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(7, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(8, 0)
-        item.setText("0")
-        item = self.ui.predictionTableWidget.item(9, 0)
-        item.setText("0")
         self.ui.predictionTableWidget.setSortingEnabled(__sortingEnabled)
         self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
         # self.ui.predictPushButton.setEnabled(False)
@@ -494,7 +476,7 @@ class MyToolBar(NavigationToolbar):
 class TableWidgetDelegate(QItemDelegate):
     def createEditor(self, parent: QWidget, option, index: QtCore.QModelIndex) -> QWidget:
         editor = QLineEdit(parent=parent)
-        pattern = '[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
+        pattern = '|[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
         reg = QRegularExpression(pattern)
         reg_validator = QRegularExpressionValidator(reg)
         editor.setValidator(reg_validator)
