@@ -19,11 +19,11 @@ from matplotlib.figure import Figure
 
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
+from scipy import stats
 
 from joblib import dump, load
 
@@ -42,9 +42,11 @@ class Window(Qtw.QMainWindow):
         self.predict_value = None
         self.scaler = None
         self.predicting_model = None
+
+        self.has_used_data_for_training = False
         # add default model
         try:
-            self.predicting_model = load('resource/models/WQIModelv2_1.pkl')
+            self.predicting_model = load('resource/models/WQIModelv2_2.pkl')
             self.scaler = load('resource/models/StdScaler_time.pkl')
         except Exception:
             # add error window in following version if needed
@@ -127,56 +129,104 @@ class Window(Qtw.QMainWindow):
             print(e)
 
     def find_csv(self):
-        # try:
-        self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
-        if self.filePath:
-            self.data_frame = pd.read_csv(self.filePath)
-            self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
-        # except Exception:
-        #     self.ui.statusbar.showMessage("No dataset selected")
+        try:
+            self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
+            if self.filePath:
+                self.data_frame = pd.read_csv(self.filePath)
+                self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
+                self.has_used_data_for_training = False
+        except Exception as e:
+            print(e)
 
     def retrain_model(self):
 
-        training_data = self.preprocess_data()
+        self.ui.statusbar.showMessage("retraining")
 
-        training_data.to_csv(r'preprocessed_data.csv', index = False, header = True)
+        print("0")
 
+        if self.has_used_data_for_training or self.data_frame is None:
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same model"
+                                          "can overtrain the model")
+        # elif self.has_used_data_for_training is None | self.data_frame is None:
+        #     print("2")
+        #     self.ui.statusbar.showMessage("Please load a dataset to train the model")
+        else:
+            print("3")
+            try:
+                training_data = self.preprocess_data()
+
+                x_train = training_data.drop['WQI']
+                y_train = training_data['WQI']
+
+                predicting_model.fit(x_train,y_train)
+
+                self.has_used_data_for_training = True
+
+                self.ui.statusbar.showMessage("retraining successful")
+
+                # training_data.to_csv(r'preprocessed_data.csv', index=False, header=True)
+            except Exception as e:
+                print('training error:'+e)
 
     def preprocess_data(self):
 
         data_frame_time = self.data_frame
 
-        # list of final columns to keep
-        final_table_columns = ['year','WQI','D.O.','PH','CONDUCTIVITY','B.O.D.','NITRATE','FECAL COLIFORM','TOTAL COLIFORM']
-        # remove unwanted columns
-        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
-        data_frame_time = data_frame_time.sort_values(by=['year'])
-        data_frame_time.dropna()
+        #print(self.data_frame)
+        #print(data_frame_time)
 
-        dupe = data_frame_time
+        try:
 
-        # appending the features previous in time
-        data_frame_time['WQI t-1'] = dupe['WQI'].shift(1)
-        data_frame_time['WQI t-2'] = dupe['WQI'].shift(2)
-        data_frame_time['WQI t-3'] = dupe['WQI'].shift(3)
-        data_frame_time['D.O. t-1'] = dupe['D.O.'].shift(1)
-        data_frame_time['PH t-1'] = dupe['PH'].shift(1)
-        data_frame_time['CONDUCTIVITY t-1'] = dupe['CONDUCTIVITY'].shift(1)
-        data_frame_time['B.O.D. t-1'] = dupe['B.O.D.'].shift(1)
-        data_frame_time['NITRATE t-1'] = dupe['NITRATE'].shift(1)
-        data_frame_time['FECAL COLIFORM t-1'] = dupe['FECAL COLIFORM'].shift(1)
-        data_frame_time['TOTAL COLIFORM t-1'] = dupe['TOTAL COLIFORM'].shift(1)
+            # list of final columns to keep
+            final_table_columns = ['year','WQI','D.O.','PH','CONDUCTIVITY','B.O.D.','NITRATE','FECAL COLIFORM','TOTAL COLIFORM']
+            # remove unwanted columns
+            #data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
+            data_frame_time = data_frame_time.sort_values(by=['year'])
+            data_frame_time.dropna()
 
-        final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
-                               'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
-        data_frame_time.dropna()
-        data_frame_time = data_frame_time.drop(
-            columns=[col for col in data_frame_time if col not in final_table_columns])
+
+            dupe = data_frame_time
+
+            # appending the features previous in time
+            data_frame_time['WQI t-1'] = dupe['WQI'].shift(1)
+            data_frame_time['WQI t-2'] = dupe['WQI'].shift(2)
+            data_frame_time['WQI t-3'] = dupe['WQI'].shift(3)
+            data_frame_time['D.O. t-1'] = dupe['D.O.'].shift(1)
+            data_frame_time['PH t-1'] = dupe['PH'].shift(1)
+            data_frame_time['CONDUCTIVITY t-1'] = dupe['CONDUCTIVITY'].shift(1)
+            data_frame_time['B.O.D. t-1'] = dupe['B.O.D.'].shift(1)
+            data_frame_time['NITRATE t-1'] = dupe['NITRATE'].shift(1)
+            data_frame_time['FECAL COLIFORM t-1'] = dupe['FECAL COLIFORM'].shift(1)
+            data_frame_time['TOTAL COLIFORM t-1'] = dupe['TOTAL COLIFORM'].shift(1)
+
+            final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
+                                   'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
+
+            data_frame_time = data_frame_time.dropna()
+
+            data_frame_time = data_frame_time.drop(
+                columns=[col for col in data_frame_time if col not in final_table_columns])
+
+            data_frame_time = data_frame_time[(np.abs(stats.zscore(data_frame_time)) < 3).all(axis=1)]
+
+            print(data_frame_time)
+
+            x_time = data_frame_time.drop(columns=['WQI'])
+
+            x_time = self.scaler.transform(x_time)
+
+            y_time = data_frame_time['WQI']
+
+            processed_data = x_time
+            processed_data['WQI'] = y_time.tolist()
+
+            return processed_data
+
+        except Exception as e:
+            print ('preprocessing error: ' + e)
 
         return data_frame_time
-
-
 
     def get_feature(self, year, feature):
 
@@ -204,11 +254,6 @@ class Window(Qtw.QMainWindow):
     #         self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
-
-        try:
-            self.preprocess_data()
-        except Exception as e:
-            print(e)
 
         try:
             value = self.read_table_data()
