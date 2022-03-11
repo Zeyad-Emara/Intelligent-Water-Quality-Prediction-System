@@ -155,6 +155,8 @@ class Window(Qtw.QMainWindow):
             try:
                 training_data = self.preprocess_data()
 
+                print("training...")
+
                 x_train = training_data.drop['WQI']
                 y_train = training_data['WQI']
 
@@ -172,8 +174,6 @@ class Window(Qtw.QMainWindow):
 
         data_frame_time = self.data_frame
 
-        #print(self.data_frame)
-        #print(data_frame_time)
 
         try:
 
@@ -210,15 +210,12 @@ class Window(Qtw.QMainWindow):
 
             data_frame_time = data_frame_time[(np.abs(stats.zscore(data_frame_time)) < 3).all(axis=1)]
 
-            print(data_frame_time)
-
             x_time = data_frame_time.drop(columns=['WQI'])
 
-            x_time = self.scaler.transform(x_time)
+            processed_data = pd.DataFrame( self.scaler.transform(x_time))
 
             y_time = data_frame_time['WQI']
 
-            processed_data = x_time
             processed_data['WQI'] = y_time.tolist()
 
             return processed_data

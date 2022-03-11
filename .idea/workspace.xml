@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="working import mock data">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_3_3_2022_3_51_PM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_3_3_2022_3_51_PM__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_3_3_2022_3_54_PM_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_3_3_2022_3_54_PM__Changes_.xml" beforeDir="false" />
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="commit for the day">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -48,13 +44,13 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource/models" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource\models" />
+      <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System\resource" />
       <recent name="C:\Users\USER\PycharmProjects\Intelligent-Water-Quality-Prediction-System" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -236,7 +232,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646803884368</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="commit for the day">
+      <created>1647022565506</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1647022565506</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -262,7 +265,8 @@
     <MESSAGE value="working predictor, using scaler to autofill" />
     <MESSAGE value="added mock data" />
     <MESSAGE value="added preprocessng funtion for training" />
-    <option name="LAST_COMMIT_MESSAGE" value="added preprocessng funtion for training" />
+    <MESSAGE value="commit for the day" />
+    <option name="LAST_COMMIT_MESSAGE" value="commit for the day" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
