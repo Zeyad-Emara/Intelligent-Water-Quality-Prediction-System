@@ -142,33 +142,25 @@ class Window(Qtw.QMainWindow):
 
         self.ui.statusbar.showMessage("retraining")
 
-        print("0")
-
         if self.has_used_data_for_training or self.data_frame is None:
-            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same model"
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
                                           "can overtrain the model")
         # elif self.has_used_data_for_training is None | self.data_frame is None:
         #     print("2")
         #     self.ui.statusbar.showMessage("Please load a dataset to train the model")
         else:
-            print("3")
             try:
                 training_data = self.preprocess_data()
 
-                print("training...")
-
-                x_train = training_data.drop['WQI']
+                x_train = training_data.drop(columns=['WQI'])
                 y_train = training_data['WQI']
 
-                predicting_model.fit(x_train,y_train)
-
+                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                self.predicting_model.fit(x_train,y_train)
                 self.has_used_data_for_training = True
-
                 self.ui.statusbar.showMessage("retraining successful")
-
-                # training_data.to_csv(r'preprocessed_data.csv', index=False, header=True)
             except Exception as e:
-                print('training error:'+e)
+                print('training error:'+ e)
 
     def preprocess_data(self):
 
@@ -180,11 +172,9 @@ class Window(Qtw.QMainWindow):
             # list of final columns to keep
             final_table_columns = ['year','WQI','D.O.','PH','CONDUCTIVITY','B.O.D.','NITRATE','FECAL COLIFORM','TOTAL COLIFORM']
             # remove unwanted columns
-            #data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
+            data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
             data_frame_time = data_frame_time.sort_values(by=['year'])
             data_frame_time.dropna()
-
-
 
             dupe = data_frame_time
 
@@ -204,18 +194,15 @@ class Window(Qtw.QMainWindow):
                                    'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
             data_frame_time = data_frame_time.dropna()
-
             data_frame_time = data_frame_time.drop(
                 columns=[col for col in data_frame_time if col not in final_table_columns])
-
             data_frame_time = data_frame_time[(np.abs(stats.zscore(data_frame_time)) < 3).all(axis=1)]
 
             x_time = data_frame_time.drop(columns=['WQI'])
-
-            processed_data = pd.DataFrame( self.scaler.transform(x_time))
+            processed_data = pd.DataFrame(self.scaler.transform(x_time))
+            processed_data.columns = x_time.columns
 
             y_time = data_frame_time['WQI']
-
             processed_data['WQI'] = y_time.tolist()
 
             return processed_data

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="commit for the day">
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="working preprocessing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -239,7 +239,14 @@
       <option name="project" value="LOCAL" />
       <updated>1647022565506</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="working preprocessing">
+      <created>1647023068571</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1647023068571</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -266,17 +273,10 @@
     <MESSAGE value="added mock data" />
     <MESSAGE value="added preprocessng funtion for training" />
     <MESSAGE value="commit for the day" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit for the day" />
+    <MESSAGE value="working preprocessing" />
+    <option name="LAST_COMMIT_MESSAGE" value="working preprocessing" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="self" />
