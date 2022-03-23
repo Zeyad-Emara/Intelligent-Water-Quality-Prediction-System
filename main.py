@@ -51,7 +51,7 @@ class Window(Qtw.QMainWindow):
             self.ui.statusbar.showMessage("Default modal not detected")
         # add default dataset
         try:
-            self.data_frame = pd.read_csv("resource/trainingData/water_dataX_wqi_cleaned.csv")
+            self.data_frame = pd.read_csv("resource/Mock Data/MockData1.csv")
         except Exception:
             self.ui.statusbar.showMessage("Default dataset not detected")
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
@@ -115,11 +115,17 @@ class Window(Qtw.QMainWindow):
                   'B.O.D. (mg/l)': 'B.O.D.',
                   'Nitrate (mg/l)': 'NITRATE',
                   'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM',
-                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM'
+                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM',
+                  'Years': 'year'
                   }
         try:
             self.graph.clear()
-            self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis], ax=self.graph)
+            if self.new_x_axis == 'Years':
+                self.data_frame.plot(kind='line', x=column[self.new_x_axis], y=column[self.new_y_axis],
+                                     ax=self.graph)
+            else:
+                self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis],
+                                     ax=self.graph)
             self.graph.axes.set_xlabel(self.new_x_axis)
             self.graph.axes.set_ylabel(self.new_y_axis)
             self.static_canvas.draw()
@@ -127,19 +133,19 @@ class Window(Qtw.QMainWindow):
             print(e)
 
     def find_csv(self):
-        # try:
         self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         if self.filePath:
             self.data_frame = pd.read_csv(self.filePath)
             self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
-        # except Exception:
-        #     self.ui.statusbar.showMessage("No dataset selected")
+        else:
+            self.ui.statusbar.showMessage("No dataset selected")
 
     def retrain_model(self):
 
         training_data = self.preprocess_data()
 
         training_data.to_csv(r'preprocessed_data.csv', index = False, header = True)
+        self.ui.statusbar.showMessage("Model retrained")
 
 
     def preprocess_data(self):
@@ -187,21 +193,6 @@ class Window(Qtw.QMainWindow):
         except:
             return None
 
-    # def plot_graph(self):
-    #     try:
-    #         self.data_frame = pd.read_csv(self.filePath, encoding='utf-8')
-    #         columns = list(self.data_frame.columns)
-    #         df = pd.read_csv(self.filePath, usecols=columns)
-    #         df.plot(ax=self.graph)
-    #         self.graph.legend().set_draggable(True)
-    #         self.graph.axes.set_xlabel('X Axis')
-    #         self.graph.axes.set_ylabel('Y Axis')
-    #         self.graph.axes.set_title('Title')
-    #         self.static_canvas.draw()
-    #         self.ui.predictPushButton.setEnabled(True)
-    #         self.ui.autofillPushButton.setEnabled(True)
-    #     except Exception:
-    #         self.ui.statusbar.showMessage("Failed to plot graph")
 
     def prediction(self):
 
@@ -222,7 +213,7 @@ class Window(Qtw.QMainWindow):
                 self.ui.statusbar.showMessage("Invalid input(s)")
         except Exception as e:
             print(e)
-            self.ui.statusbar.showMessage("Something's wrong with the model")
+            self.ui.statusbar.showMessage("Invalid input(s)")
 
     def read_table_data(self):
         self.ui.statusbar.showMessage("")
