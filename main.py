@@ -1,34 +1,21 @@
 import sys
 
-from PyQt6.QtWidgets import QLineEdit, QItemDelegate, QWidget, QComboBox, QTableView, QStyledItemDelegate, QDialog, \
-    QDockWidget
-
-import template
-from template import Ui_MainWindow
-from about_template import Ui_Dialog as AboutDialog
-from PyQt6.QtCore import QRegularExpression, QRect, QCoreApplication
-from PyQt6 import QtWidgets as Qtw, QtCore, QtGui, QtWidgets
-from PyQt6.QtGui import QDoubleValidator, QValidator, QRegularExpressionValidator, QPen, QColor, QBrush
-
-# for exe file compilation
-import sklearn.utils._typedefs
-from PyQt6 import QtCore, QtGui, QtWidgets
-
+import numpy as np
+import pandas as pd
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtGui import QRegularExpressionValidator, QColor, QBrush, QIcon
+from joblib import load
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
-import numpy as np
-import pandas as pd
-# import matplotlib.pyplot as plt
+from about_template import Ui_Dialog as AboutDialog
+from template import Ui_MainWindow
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-
-from joblib import dump, load
+# for exe file compilation
+# import sklearn.utils._typedefs
 
 
-class Window(Qtw.QMainWindow):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(Window, self).__init__(*args, **kwargs)
@@ -47,20 +34,17 @@ class Window(Qtw.QMainWindow):
             self.predicting_model = load('resource/models/WQIModelv2_1.pkl')
             self.scaler = load('resource/models/StdScaler_time.pkl')
         except Exception:
-            # add error window in following version if needed
             self.ui.statusbar.showMessage("Default modal not detected")
         # add default dataset
         try:
             self.data_frame = pd.read_csv("resource/Mock Data/MockData1.csv")
         except Exception:
             self.ui.statusbar.showMessage("Default dataset not detected")
+        # Default axis
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
         self.new_y_axis = 'Dissolved Oxygen (mg/l)'
-        # self.isImportDocketClosed = False
-        # Update statusbar
-        # self.ui.statusbar.showMessage("No dataset found")
         # Draw canvas and Toolbar
-        self.layout = Qtw.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.static_canvas = FigureCanvasQTAgg(Figure(figsize=(10, 10)))
         self.layout.addWidget(MyToolBar(self.static_canvas, self.centralWidget()))
         self.graph = self.static_canvas.figure.add_subplot(111)
@@ -69,10 +53,8 @@ class Window(Qtw.QMainWindow):
         # add import button function
         self.ui.importPushButton.clicked.connect(self.find_csv)
         # add predicting value function
-        # self.ui.predictPushButton.setEnabled(False)
         self.ui.predictPushButton.clicked.connect(self.prediction)
         # add autofill function
-        # self.ui.autofillPushButton.setEnabled(False)
         self.ui.autofillPushButton.clicked.connect(self.auto_fill)
         # set result display area read only
         self.ui.resultOutput.setReadOnly(True)
@@ -90,7 +72,7 @@ class Window(Qtw.QMainWindow):
         # add about page
         self.ui.actionAbout.triggered.connect(self.build_about)
         # add close function
-        self.ui.actionClose.triggered.connect(QCoreApplication.instance().quit)
+        self.ui.actionClose.triggered.connect(QtCore.QCoreApplication.instance().quit)
         # add import docker widget function
         self.ui.actionImport_widget.triggered.connect(self.import_docker)
         # add prediction docker widget function
@@ -99,15 +81,21 @@ class Window(Qtw.QMainWindow):
         self.ui.actionResult_widget.triggered.connect(self.result_docker)
         # add retrain model function
         self.ui.actionRe_train.triggered.connect(self.retrain_model)
+        # add icon and title to the application
+        self.setWindowIcon(QIcon('resource/icon/water-icon.png'))
+        self.setWindowTitle("Water Quality Prediction Application")
         # Your code ends here
         self.show()
 
+    # This method save the new x-axis selected
     def change_x_axis(self, x_axis):
         self.new_x_axis = x_axis
 
+    # This method save the new y-axis selected
     def change_y_axis(self, y_axis):
         self.new_y_axis = y_axis
 
+    # This method plots the graph
     def change_graph_axis(self):
         column = {'Dissolved Oxygen (mg/l)': 'D.O.',
                   'pH': 'PH',
@@ -129,33 +117,33 @@ class Window(Qtw.QMainWindow):
             self.graph.axes.set_xlabel(self.new_x_axis)
             self.graph.axes.set_ylabel(self.new_y_axis)
             self.static_canvas.draw()
-        except Exception as e:
-            print(e)
+        except Exception:
+            self.ui.statusbar.showMessage("Error occurs when plotting graph. Please check headers of csv file.")
 
+    # This method gets the dataset path from the user
     def find_csv(self):
-        self.filePath = Qtw.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
+        self.filePath = QtWidgets.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         if self.filePath:
             self.data_frame = pd.read_csv(self.filePath)
             self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
         else:
             self.ui.statusbar.showMessage("No dataset selected")
 
+    # This method retrains the model
     def retrain_model(self):
-
         training_data = self.preprocess_data()
-
-        training_data.to_csv(r'preprocessed_data.csv', index = False, header = True)
+        training_data.to_csv(r'preprocessed_data.csv', index=False, header=True)
         self.ui.statusbar.showMessage("Model retrained")
 
-
+    # This method will pre-process the user's input before feeding it to the model
     def preprocess_data(self):
-
         data_frame_time = self.data_frame
-
         # list of final columns to keep
-        final_table_columns = ['year','WQI','D.O.','PH','CONDUCTIVITY','B.O.D.','NITRATE','FECAL COLIFORM','TOTAL COLIFORM']
+        final_table_columns = ['year', 'WQI', 'D.O.', 'PH', 'CONDUCTIVITY', 'B.O.D.', 'NITRATE', 'FECAL COLIFORM',
+                               'TOTAL COLIFORM']
         # remove unwanted columns
-        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time if col not in final_table_columns])
+        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
+                                                        if col not in final_table_columns])
         data_frame_time = data_frame_time.sort_values(by=['year'])
         data_frame_time.dropna()
 
@@ -182,8 +170,7 @@ class Window(Qtw.QMainWindow):
 
         return data_frame_time
 
-
-
+    # no usage
     def get_feature(self, year, feature):
 
         water_data = self.data_frame
@@ -193,36 +180,46 @@ class Window(Qtw.QMainWindow):
         except:
             return None
 
-
+    # This method perform the prediction
     def prediction(self):
-
+        # pre-process data
         try:
             self.preprocess_data()
-        except Exception as e:
-            print(e)
-
+        except Exception:
+            self.ui.statusbar.showMessage("Error occurs when pre-processing data.")
+        # read user inputs and perform prediction
         try:
             value = self.read_table_data()
             if len(value) == 10:
                 value = np.array(value).reshape(1, -1)
                 self.predict_input = self.scaler.transform(value)
                 self.predict_value = self.predicting_model.predict(self.predict_input)
+                index = round(self.predict_value[0], 4)
+                if index < 50:
+                    quality = 'Poor'
+                elif index < 80:
+                    quality = 'Normal'
+                else:
+                    quality = 'Good'
+                display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),
+                                                                                           quality=quality)
                 self.ui.resultOutput.clear()
-                self.ui.resultOutput.insertPlainText(str(self.predict_value[0]))
+                self.ui.resultOutput.insertPlainText(display)
             else:
                 self.ui.statusbar.showMessage("Invalid input(s)")
-        except Exception as e:
-            print(e)
-            self.ui.statusbar.showMessage("Invalid input(s)")
+        except Exception:
+            self.ui.statusbar.showMessage("Error occurs within the model.")
 
+    # This method reads the user input
     def read_table_data(self):
-        self.ui.statusbar.showMessage("")
+        # append user inputs into item
         # WQI t-1, WQI t-2, WQI t-3, dissolved oxygen, pH, conductivity, B.O.D., Nitrate, Fecal Coliform, Total Coliform
         item = []
         row_count = self.ui.predictionTableWidget.rowCount()
+        # input restrictions
         # WQI t-1, WQI t-2, WQI t-3, dissolved oxygen, pH, conductivity, B.O.D., Nitrate, Fecal Coliform, Total Coliform
-        restriction = [(0, 100), (0, 100), (0, 100), (0, 100), (0, 14), (0, 100), (0, 100), (0, 20), (0, 1000),
-                       (0, 1000), ]
+        restriction = [(0, 1000), (0, 1000), (0, 1000), (0, 1000), (0, 14), (0, 10000), (0, 1000), (0, 1000),
+                       (0, 10000), (0, 10000)]
         # check for invalid inputs
         for row in range(row_count):
             value = float(self.ui.predictionTableWidget.item(row, 0).text())
@@ -234,27 +231,23 @@ class Window(Qtw.QMainWindow):
             item.append(value)
         return item
 
+    # This method perform the autofill function
     def auto_fill(self):
-        try:
-            # column = ['', '', '', 'D.O. (mg/l)', 'PH', 'CONDUCTIVITY (µmhos/cm)', 'B.O.D. (mg/l)',
-            #          'NITRATE N+ NITRITEN (mg/l)', 'FECAL COLIFORM (MPN/100ml)', 'TOTAL COLIFORM (MPN/100ml)Mean']
-            for idx in range(0, 10):
-                if self.ui.predictionTableWidget.item(idx, 0).text() == "":
-                    mean = self.scaler.mean_[idx]
-                    self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
-                    self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
-                    # self.ui.predictionTableWidget.item(idx, 0).setToolTip("Suggested value")
-        except Exception as e:
-            print(e)
+        for idx in range(0, 10):
+            if self.ui.predictionTableWidget.item(idx, 0).text() == "":
+                mean = self.scaler.mean_[idx]
+                self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
+                self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
 
+    # This method will generate the import docket
     def import_docker(self):
         self.ui.importDockWidget = QtWidgets.QDockWidget(self)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
-                                           QtWidgets.QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.ui.importDockWidget.sizePolicy().hasHeightForWidth())
-        self.ui.importDockWidget.setSizePolicy(sizePolicy)
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                            QtWidgets.QSizePolicy.Policy.Preferred)
+        size_policy.setHorizontalStretch(0)
+        size_policy.setVerticalStretch(0)
+        size_policy.setHeightForWidth(self.ui.importDockWidget.sizePolicy().hasHeightForWidth())
+        self.ui.importDockWidget.setSizePolicy(size_policy)
         self.ui.importDockWidget.setMinimumSize(QtCore.QSize(316, 86))
         self.ui.importDockWidget.setBaseSize(QtCore.QSize(0, 0))
         self.ui.importDockWidget.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
@@ -275,6 +268,7 @@ class Window(Qtw.QMainWindow):
         self.ui.importPushButton.clicked.connect(self.find_csv)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.ui.importDockWidget)
 
+    # This method will generate the prediction docket
     def prediction_docker(self):
         self.ui.predictionDockWidget = QtWidgets.QDockWidget(self)
         self.ui.predictionDockWidget.setMinimumSize(QtCore.QSize(316, 330))
@@ -404,12 +398,11 @@ class Window(Qtw.QMainWindow):
         self.ui.predictionTableWidget.setSortingEnabled(False)
         self.ui.predictionTableWidget.setSortingEnabled(__sortingEnabled)
         self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
-        # self.ui.predictPushButton.setEnabled(False)
         self.ui.predictPushButton.clicked.connect(self.prediction)
-        # self.ui.autofillPushButton.setEnabled(False)
         self.ui.autofillPushButton.clicked.connect(self.auto_fill)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.ui.predictionDockWidget)
 
+    # This method will generate the result docket
     def result_docker(self):
         self.ui.resultDockWidget = QtWidgets.QDockWidget(self)
         self.ui.resultDockWidget.setMinimumSize(QtCore.QSize(316, 170))
@@ -437,14 +430,16 @@ class Window(Qtw.QMainWindow):
         self.ui.resultOutput.setReadOnly(True)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.ui.resultDockWidget)
 
+    # This method will generate the about page
     def build_about(self):
-        dialog = QDialog(self)
+        dialog = QtWidgets.QDialog(self)
         dialog.ui = AboutDialog()
         dialog.ui.setupUi(dialog)
         dialog.exec()
         dialog.show()
 
 
+# This class overwrites the function of the graph's toolbar
 class MyToolBar(NavigationToolbar):
 
     def zoom(self, *args):
@@ -459,22 +454,22 @@ class MyToolBar(NavigationToolbar):
 
     def set_message(self, s):
         pass
-        # self.message.emit(s)
         if self.coordinates:
             self.locLabel.setText(s)
 
 
-class TableWidgetDelegate(QItemDelegate):
-    def createEditor(self, parent: QWidget, option, index: QtCore.QModelIndex) -> QWidget:
-        editor = QLineEdit(parent=parent)
+# This class generates the user input's restriction
+class TableWidgetDelegate(QtWidgets.QItemDelegate):
+    def createEditor(self, parent: QtWidgets.QWidget, option, index: QtCore.QModelIndex) -> QtWidgets.QWidget:
+        editor = QtWidgets.QLineEdit(parent=parent)
         pattern = '|[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
-        reg = QRegularExpression(pattern)
+        reg = QtCore.QRegularExpression(pattern)
         reg_validator = QRegularExpressionValidator(reg)
         editor.setValidator(reg_validator)
         return editor
 
 
 if __name__ == "__main__":
-    app = Qtw.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = Window()
     sys.exit(app.exec())
