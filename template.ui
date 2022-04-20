@@ -78,6 +78,11 @@
           <string>Total Coliform (MPN/100ml)</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Years</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
@@ -467,7 +472,7 @@
         </column>
         <item row="0" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -475,7 +480,7 @@
         </item>
         <item row="1" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -483,7 +488,7 @@
         </item>
         <item row="2" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -491,7 +496,7 @@
         </item>
         <item row="3" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -499,7 +504,7 @@
         </item>
         <item row="4" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -507,7 +512,7 @@
         </item>
         <item row="5" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -515,7 +520,7 @@
         </item>
         <item row="6" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -523,7 +528,7 @@
         </item>
         <item row="7" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -531,7 +536,7 @@
         </item>
         <item row="8" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>
@@ -539,7 +544,7 @@
         </item>
         <item row="9" column="0">
          <property name="text">
-          <string>0</string>
+          <string/>
          </property>
          <property name="textAlignment">
           <set>AlignTrailing|AlignVCenter</set>

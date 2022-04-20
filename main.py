@@ -1,34 +1,21 @@
 import sys
 
-from PyQt6.QtWidgets import QLineEdit, QItemDelegate, QWidget, QComboBox, QTableView, QStyledItemDelegate, QDialog, \
-    QDockWidget
-
-import template
-from template import Ui_MainWindow
-from about_template import Ui_Dialog as AboutDialog
-from PyQt6.QtCore import QRegularExpression, QRect, QCoreApplication
-from PyQt6 import QtWidgets as Qtw, QtCore, QtGui, QtWidgets
-from PyQt6.QtGui import QDoubleValidator, QValidator, QRegularExpressionValidator, QPen, QColor, QBrush
-
-# for exe file compilation
-import sklearn.utils._typedefs
-from PyQt6 import QtCore, QtGui, QtWidgets
-
+import numpy as np
+import pandas as pd
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtGui import QRegularExpressionValidator, QColor, QBrush, QIcon
+from joblib import load
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
-import numpy as np
-import pandas as pd
-# import matplotlib.pyplot as plt
+from about_template import Ui_Dialog as AboutDialog
+from template import Ui_MainWindow
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-
-from joblib import dump, load
+# for exe file compilation
+# import sklearn.utils._typedefs
 
 
-class Window(Qtw.QMainWindow):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(Window, self).__init__(*args, **kwargs)
