@@ -4,16 +4,13 @@ import numpy as np
 import pandas as pd
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtGui import QRegularExpressionValidator, QColor, QBrush, QIcon
-
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
-
 from about_template import Ui_Dialog as AboutDialog
 from template import Ui_MainWindow
 
+# used in predicting and scaling file
 from sklearn.model_selection import train_test_split
-
-# used in pkl file
 from joblib import dump, load
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -186,14 +183,26 @@ class Window(QtWidgets.QMainWindow):
         final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
                                'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
+        #data_frame_time = data_frame_time.reset_index(drop=True)
         data_frame_time = data_frame_time.dropna()
         data_frame_time = data_frame_time.drop(
             columns=[col for col in data_frame_time if col not in final_table_columns])
+
+        data_frame_WQI = data_frame_time['WQI']
+        data_frame_WQI = data_frame_WQI.reset_index(drop=True)
+        data_frame_time = data_frame_time.drop(columns = ['WQI'])
+
+        data_frame_time =  pd.DataFrame(self.scaler.transform(data_frame_time), columns = data_frame_time.columns)
+
+        data_frame_time['WQI'] = data_frame_WQI
+
+        data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
 
         return data_frame_time
 
     # This method perform the prediction
     def prediction(self):
+
         try:
             value = self.read_table_data()
             if len(value) == 10:
@@ -201,10 +210,14 @@ class Window(QtWidgets.QMainWindow):
                 self.predict_input = self.scaler.transform(value)
                 self.predict_value = self.predicting_model.predict(self.predict_input)
                 index = round(self.predict_value[0], 4)
-                if index < 50:
+                if index < 25:
+                    quality = 'Excellent'
+                elif index < 50:
+                    quality = 'Good'
+                elif index < 75:
                     quality = 'Poor'
-                elif index < 80:
-                    quality = 'Normal'
+                elif index < 100:
+                    quality = 'Very Poor'
                 else:
                     quality = 'Good'
                 display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),

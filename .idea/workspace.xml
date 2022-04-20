@@ -4,7 +4,6 @@
     <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="add new hyperlink">
       <change afterPath="$PROJECT_DIR$/resource/Mock Data/MockData2.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/resource/models/WQIModelv3.0.pkl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resource/models/StdScaler_time.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/resource/models/StdScalerv2.0.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resource/models/WQIModelv2_1.pkl" beforeDir="false" />
