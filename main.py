@@ -219,7 +219,7 @@ class Window(QtWidgets.QMainWindow):
                 elif index < 100:
                     quality = 'Very Poor'
                 else:
-                    quality = 'Good'
+                    quality = 'Undrinkable'
                 display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),
                                                                                            quality=quality)
                 self.ui.resultOutput.clear()
