@@ -31,7 +31,7 @@ class Window(QtWidgets.QMainWindow):
         self.predicting_model = None
         # add default model
         try:
-            self.predicting_model = load('resource/models/WQIModelv2_1.pkl')
+            self.predicting_model = load('resource/models/WQIModelv2_2.pkl')
             self.scaler = load('resource/models/StdScaler_time.pkl')
         except Exception:
             self.ui.statusbar.showMessage("Default modal not detected")
@@ -232,11 +232,14 @@ class Window(QtWidgets.QMainWindow):
 
     # This method perform the autofill function
     def auto_fill(self):
-        for idx in range(0, 10):
-            if self.ui.predictionTableWidget.item(idx, 0).text() == "":
-                mean = self.scaler.mean_[idx]
-                self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
-                self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
+        try:
+            for idx in range(0, 10):
+                if self.ui.predictionTableWidget.item(idx, 0).text() == "":
+                    mean = self.scaler.mean_[idx]
+                    self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
+                    self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
+        except Exception as e:
+            print(e)
 
     # This method will generate the import docket
     def import_docker(self):
