@@ -192,10 +192,9 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(columns = ['WQI'])
 
         data_frame_time =  pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns = data_frame_time.columns)
-
         data_frame_time['WQI'] = data_frame_WQI
 
-        data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
+        #data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
 
         return data_frame_time
 
