@@ -222,6 +222,7 @@ class Window(QtWidgets.QMainWindow):
                                                                                            quality=quality)
                 self.ui.resultOutput.clear()
                 self.ui.resultOutput.insertPlainText(display)
+                self.ui.statusbar.showMessage("Prediction Successful!")
             else:
                 self.ui.statusbar.showMessage("Invalid input(s)")
         except Exception as e:
