@@ -4,12 +4,17 @@ import numpy as np
 import pandas as pd
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtGui import QRegularExpressionValidator, QColor, QBrush, QIcon
-from joblib import load
+from joblib import dump, load
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
 from about_template import Ui_Dialog as AboutDialog
 from template import Ui_MainWindow
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from scipy import stats
 
 # for exe file compilation
 # import sklearn.utils._typedefs
@@ -29,17 +34,21 @@ class Window(QtWidgets.QMainWindow):
         self.predict_value = None
         self.scaler = None
         self.predicting_model = None
+        self.data_frame = None
+        self.has_used_data_for_training = False
         # add default model
         try:
-            self.predicting_model = load('resource/models/WQIModelv2_2.pkl')
-            self.scaler = load('resource/models/StdScaler_time.pkl')
+            self.predicting_model = load('resource/models/WQIModelv3.0.pkl')
+            self.scaler = load('resource/models/StdScalerv2.0.pkl')
         except Exception:
             self.ui.statusbar.showMessage("Default modal not detected")
+            print("holy shit wtf")
+
         # add default dataset
-        try:
-            self.data_frame = pd.read_csv("resource/Mock Data/MockData1.csv")
-        except Exception:
-            self.ui.statusbar.showMessage("Default dataset not detected")
+        # try:
+        #    self.data_frame = pd.read_csv("resource/Mock Data/MockData1.csv")
+        #except Exception:
+        #    self.ui.statusbar.showMessage("Default dataset not detected")
         # Default axis
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
         self.new_y_axis = 'Dissolved Oxygen (mg/l)'
@@ -126,14 +135,35 @@ class Window(QtWidgets.QMainWindow):
         if self.filePath:
             self.data_frame = pd.read_csv(self.filePath)
             self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
+            self.has_used_data_for_training = False
         else:
             self.ui.statusbar.showMessage("No dataset selected")
 
     # This method retrains the model
     def retrain_model(self):
-        training_data = self.preprocess_data()
-        training_data.to_csv(r'preprocessed_data.csv', index=False, header=True)
-        self.ui.statusbar.showMessage("Model retrained")
+
+        self.ui.statusbar.showMessage("retraining")
+
+        if self.data_frame is None:
+            self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
+        elif self.has_used_data_for_training:
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
+                                          "can overtrain the model")
+        else:
+            try:
+                training_data = self.preprocess_data()
+
+                x_train = training_data.drop(columns=['WQI'])
+                y_train = training_data['WQI']
+
+                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                self.predicting_model.fit(x_train, y_train)
+                self.has_used_data_for_training = True
+                self.ui.statusbar.showMessage("retraining successful")
+            except Exception as e:
+                print('training error:' + e)
+
+        print("done retraining")
 
     # This method will pre-process the user's input before feeding it to the model
     def preprocess_data(self):
@@ -145,7 +175,7 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
                                                         if col not in final_table_columns])
         data_frame_time = data_frame_time.sort_values(by=['year'])
-        data_frame_time.dropna()
+        data_frame_time = data_frame_time.dropna()
 
         dupe = data_frame_time
 
@@ -164,9 +194,10 @@ class Window(QtWidgets.QMainWindow):
         final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
                                'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
-        data_frame_time.dropna()
+        data_frame_time = data_frame_time.dropna()
         data_frame_time = data_frame_time.drop(
             columns=[col for col in data_frame_time if col not in final_table_columns])
+        data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index = False, header=True)
 
         return data_frame_time
 
