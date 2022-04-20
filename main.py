@@ -172,7 +172,6 @@ class Window(QtWidgets.QMainWindow):
 
     # no usage
     def get_feature(self, year, feature):
-
         water_data = self.data_frame
         try:
             row = water_data.loc[(water_data['year'] == year)]
