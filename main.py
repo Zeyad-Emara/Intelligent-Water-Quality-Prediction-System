@@ -42,16 +42,17 @@ class Window(Qtw.QMainWindow):
         self.predict_value = None
         self.scaler = None
         self.predicting_model = None
+        self.has_used_data_for_training = False
         # add default model
         try:
-            self.predicting_model = load('resource/models/WQIModelv2_1.pkl')
-            self.scaler = load('resource/models/StdScaler_time.pkl')
+            self.predicting_model = load('resource/models/WQIModelv3.0.pkl')
+            self.scaler = load('resource/models/StdScaler2.0.pkl')
         except Exception:
             # add error window in following version if needed
             self.ui.statusbar.showMessage("Default modal not detected")
         # add default dataset
         try:
-            self.data_frame = pd.read_csv("resource/trainingData/water_dataX_wqi_cleaned.csv")
+            self.data_frame = pd.read_csv("resource/trainingData/water_data_1.0.csv")
         except Exception:
             self.ui.statusbar.showMessage("Default dataset not detected")
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
@@ -137,9 +138,27 @@ class Window(Qtw.QMainWindow):
 
     def retrain_model(self):
 
-        training_data = self.preprocess_data()
+        self.ui.statusbar.showMessage("retraining")
 
-        training_data.to_csv(r'preprocessed_data.csv', index = False, header = True)
+        if self.has_used_data_for_training or self.data_frame is None:
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
+                                          "can overtrain the model")
+        # elif self.has_used_data_for_training is None | self.data_frame is None:
+        #     print("2")
+        #     self.ui.statusbar.showMessage("Please load a dataset to train the model")
+        else:
+            try:
+                training_data = self.preprocess_data()
+
+                x_train = training_data.drop(columns=['WQI'])
+                y_train = training_data['WQI']
+
+                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                self.predicting_model.fit(x_train, y_train)
+                self.has_used_data_for_training = True
+                self.ui.statusbar.showMessage("retraining successful")
+            except Exception as e:
+                print('training error:' + e)
 
 
     def preprocess_data(self):
