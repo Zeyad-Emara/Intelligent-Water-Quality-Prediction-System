@@ -164,7 +164,7 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
                                                         if col not in final_table_columns])
         data_frame_time = data_frame_time.sort_values(by=['year'])
-        data_frame_time = data_frame_time.dropna()
+        #data_frame_time = data_frame_time.dropna()
 
         dupe = data_frame_time
 
@@ -183,7 +183,6 @@ class Window(QtWidgets.QMainWindow):
         final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
                                'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
-        #data_frame_time = data_frame_time.reset_index(drop=True)
         data_frame_time = data_frame_time.dropna()
         data_frame_time = data_frame_time.drop(
             columns=[col for col in data_frame_time if col not in final_table_columns])
@@ -192,7 +191,7 @@ class Window(QtWidgets.QMainWindow):
         data_frame_WQI = data_frame_WQI.reset_index(drop=True)
         data_frame_time = data_frame_time.drop(columns = ['WQI'])
 
-        data_frame_time =  pd.DataFrame(self.scaler.transform(data_frame_time), columns = data_frame_time.columns)
+        data_frame_time =  pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns = data_frame_time.columns)
 
         data_frame_time['WQI'] = data_frame_WQI
 
@@ -226,29 +225,34 @@ class Window(QtWidgets.QMainWindow):
                 self.ui.resultOutput.insertPlainText(display)
             else:
                 self.ui.statusbar.showMessage("Invalid input(s)")
-        except Exception:
-            self.ui.statusbar.showMessage("Error occurs within the model.")
+        except Exception as e:
+            self.ui.statusbar.showMessage("Error occurs within the model: ")
 
     # This method reads the user input
     def read_table_data(self):
-        # append user inputs into item
-        # WQI t-1, WQI t-2, WQI t-3, dissolved oxygen, pH, conductivity, B.O.D., Nitrate, Fecal Coliform, Total Coliform
-        item = []
         row_count = self.ui.predictionTableWidget.rowCount()
-        # input restrictions
-        # WQI t-1, WQI t-2, WQI t-3, dissolved oxygen, pH, conductivity, B.O.D., Nitrate, Fecal Coliform, Total Coliform
-        restriction = [(0, 1000), (0, 1000), (0, 1000), (0, 1000), (0, 14), (0, 10000), (0, 1000), (0, 1000),
-                       (0, 10000), (0, 10000)]
+        final_table_columns = ['WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
+                               'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
+        values_df = pd.DataFrame(columns = final_table_columns)
+        values_df.loc[values_df.shape[0]] = [None, None, None, None, None, None, None, None, None, None]
+        values = []
+
+        #get values from table.
+        for row in range(row_count):
+            values_df.iat[0,row] = float(self.ui.predictionTableWidget.item(row, 0).text())
+            values.append(float(self.ui.predictionTableWidget.item(row, 0).text()))
+
+        values_df = self.scaler.transform(values_df)
+
         # check for invalid inputs
         for row in range(row_count):
-            value = float(self.ui.predictionTableWidget.item(row, 0).text())
             self.ui.predictionTableWidget.item(row, 0).setForeground(QBrush(QColor(0, 0, 0)))
-            if round(value) not in range(restriction[row][0], restriction[row][1]):
+            if abs(values_df[0,row]) > 3:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
             else:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
-            item.append(value)
-        return item
+
+        return values
 
     # This method perform the autofill function
     def auto_fill(self):
