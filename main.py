@@ -4,15 +4,18 @@ import numpy as np
 import pandas as pd
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtGui import QRegularExpressionValidator, QColor, QBrush, QIcon
-from joblib import dump, load
+
 from matplotlib.backends.backend_qtagg import (FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 
 from about_template import Ui_Dialog as AboutDialog
 from template import Ui_MainWindow
 
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+
+# used in pkl file
+from joblib import dump, load
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from scipy import stats
 
@@ -42,13 +45,7 @@ class Window(QtWidgets.QMainWindow):
             self.scaler = load('resource/models/StdScalerv2.0.pkl')
         except Exception:
             self.ui.statusbar.showMessage("Default modal not detected")
-            print("holy shit wtf")
 
-        # add default dataset
-        # try:
-        #    self.data_frame = pd.read_csv("resource/Mock Data/MockData1.csv")
-        #except Exception:
-        #    self.ui.statusbar.showMessage("Default dataset not detected")
         # Default axis
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
         self.new_y_axis = 'Dissolved Oxygen (mg/l)'
@@ -141,31 +138,26 @@ class Window(QtWidgets.QMainWindow):
 
     # This method retrains the model
     def retrain_model(self):
+            if self.data_frame is None:
+                self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
+            elif self.has_used_data_for_training:
+                self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
+                                              "can overtrain the model")
+            else:
+                try:
+                    training_data = self.preprocess_data()
 
-        self.ui.statusbar.showMessage("retraining")
+                    x_train = training_data.drop(columns=['WQI'])
+                    y_train = training_data['WQI']
 
-        if self.data_frame is None:
-            self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
-        elif self.has_used_data_for_training:
-            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
-                                          "can overtrain the model")
-        else:
-            try:
-                training_data = self.preprocess_data()
+                    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                    self.predicting_model.fit(x_train, y_train)
+                    self.has_used_data_for_training = True
+                    self.ui.statusbar.showMessage("retraining successful")
+                except Exception:
+                    self.ui.statusbar("Training Error")
 
-                x_train = training_data.drop(columns=['WQI'])
-                y_train = training_data['WQI']
-
-                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
-                self.predicting_model.fit(x_train, y_train)
-                self.has_used_data_for_training = True
-                self.ui.statusbar.showMessage("retraining successful")
-            except Exception as e:
-                print('training error:' + e)
-
-        print("done retraining")
-
-    # This method will pre-process the user's input before feeding it to the model
+    # This method will process the raw data loaded to prepare it for re-training
     def preprocess_data(self):
         data_frame_time = self.data_frame
         # list of final columns to keep
@@ -197,27 +189,11 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.dropna()
         data_frame_time = data_frame_time.drop(
             columns=[col for col in data_frame_time if col not in final_table_columns])
-        data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index = False, header=True)
 
         return data_frame_time
 
-    # no usage
-    def get_feature(self, year, feature):
-        water_data = self.data_frame
-        try:
-            row = water_data.loc[(water_data['year'] == year)]
-            return row.iloc[0][feature]
-        except:
-            return None
-
     # This method perform the prediction
     def prediction(self):
-        # pre-process data
-        try:
-            self.preprocess_data()
-        except Exception:
-            self.ui.statusbar.showMessage("Error occurs when pre-processing data.")
-        # read user inputs and perform prediction
         try:
             value = self.read_table_data()
             if len(value) == 10:
@@ -263,14 +239,11 @@ class Window(QtWidgets.QMainWindow):
 
     # This method perform the autofill function
     def auto_fill(self):
-        try:
-            for idx in range(0, 10):
-                if self.ui.predictionTableWidget.item(idx, 0).text() == "":
-                    mean = self.scaler.mean_[idx]
-                    self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
-                    self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
-        except Exception as e:
-            print(e)
+        for idx in range(0, 10):
+            if self.ui.predictionTableWidget.item(idx, 0).text() == "":
+                mean = self.scaler.mean_[idx]
+                self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
+                self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
 
     # This method will generate the import docket
     def import_docker(self):
