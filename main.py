@@ -488,7 +488,7 @@ class MyToolBar(NavigationToolbar):
 class TableWidgetDelegate(QtWidgets.QItemDelegate):
     def createEditor(self, parent: QtWidgets.QWidget, option, index: QtCore.QModelIndex) -> QtWidgets.QWidget:
         editor = QtWidgets.QLineEdit(parent=parent)
-        pattern = '|[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
+        pattern = '|(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?'
         reg = QtCore.QRegularExpression(pattern)
         reg_validator = QRegularExpressionValidator(reg)
         editor.setValidator(reg_validator)
