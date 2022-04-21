@@ -35,6 +35,7 @@ class Window(QtWidgets.QMainWindow):
         self.scaler = None
         self.predicting_model = None
         self.data_frame = None
+        self.is_invalid = False
         self.has_used_data_for_training = False
         # add default model
         try:
@@ -202,7 +203,7 @@ class Window(QtWidgets.QMainWindow):
     def prediction(self):
         try:
             value = self.read_table_data()
-            if len(value) == 10:
+            if not self.is_invalid:
                 value = np.array(value).reshape(1, -1)
                 self.predict_input = self.scaler.transform(value)
                 self.predict_value = self.predicting_model.predict(self.predict_input)
@@ -214,6 +215,7 @@ class Window(QtWidgets.QMainWindow):
                 self.ui.resultOutput.insertPlainText(display)
                 self.ui.statusbar.showMessage("Prediction Successful!")
             else:
+                self.is_invalid = False
                 self.ui.statusbar.showMessage("Invalid input(s)")
         except Exception:
             self.ui.statusbar.showMessage("Error occurs within the model")
@@ -252,6 +254,7 @@ class Window(QtWidgets.QMainWindow):
             self.ui.predictionTableWidget.item(row, 0).setForeground(QBrush(QColor(0, 0, 0)))
             if abs(values_df[0, row]) > 3:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
+                self.is_invalid = True
             else:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
 
