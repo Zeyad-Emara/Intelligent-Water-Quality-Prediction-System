@@ -17,7 +17,7 @@ from sklearn.svm import SVC
 from scipy import stats
 
 # for exe file compilation
-# import sklearn.utils._typedefs
+import sklearn.utils._typedefs
 
 
 class Window(QtWidgets.QMainWindow):
@@ -121,7 +121,7 @@ class Window(QtWidgets.QMainWindow):
             self.graph.axes.set_ylabel(self.new_y_axis)
             self.static_canvas.draw()
         except Exception:
-            self.ui.statusbar.showMessage("Error occurs when plotting graph. Please check headers of csv file.")
+            self.ui.statusbar.showMessage("Error occurs when plotting graph.")
 
     # This method gets the dataset path from the user
     def find_csv(self):
@@ -135,24 +135,24 @@ class Window(QtWidgets.QMainWindow):
 
     # This method retrains the model
     def retrain_model(self):
-            if self.data_frame is None:
-                self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
-            elif self.has_used_data_for_training:
-                self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
-                                              "can overtrain the model")
-            else:
-                try:
-                    training_data = self.preprocess_data()
+        if self.data_frame is None:
+            self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
+        elif self.has_used_data_for_training:
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
+                                          "can overtrain the model")
+        else:
+            try:
+                training_data = self.preprocess_data()
 
-                    x_train = training_data.drop(columns=['WQI'])
-                    y_train = training_data['WQI']
+                x_train = training_data.drop(columns=['WQI'])
+                y_train = training_data['WQI']
 
-                    x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
-                    self.predicting_model.fit(x_train, y_train)
-                    self.has_used_data_for_training = True
-                    self.ui.statusbar.showMessage("retraining successful")
-                except Exception:
-                    self.ui.statusbar("Training Error")
+                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                self.predicting_model.fit(x_train, y_train)
+                self.has_used_data_for_training = True
+                self.ui.statusbar.showMessage("retraining successful")
+            except Exception:
+                self.ui.statusbar("Training Error")
 
     # This method will process the raw data loaded to prepare it for re-training
     def preprocess_data(self):
@@ -164,7 +164,7 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
                                                         if col not in final_table_columns])
         data_frame_time = data_frame_time.sort_values(by=['year'])
-        #data_frame_time = data_frame_time.dropna()
+        # data_frame_time = data_frame_time.dropna()
 
         dupe = data_frame_time
 
@@ -187,20 +187,19 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(
             columns=[col for col in data_frame_time if col not in final_table_columns])
 
-        data_frame_WQI = data_frame_time['WQI']
-        data_frame_WQI = data_frame_WQI.reset_index(drop=True)
-        data_frame_time = data_frame_time.drop(columns = ['WQI'])
+        data_frame_wqi = data_frame_time['WQI']
+        data_frame_wqi = data_frame_wqi.reset_index(drop=True)
+        data_frame_time = data_frame_time.drop(columns=['WQI'])
 
-        data_frame_time =  pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns = data_frame_time.columns)
-        data_frame_time['WQI'] = data_frame_WQI
+        data_frame_time = pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns=data_frame_time.columns)
+        data_frame_time['WQI'] = data_frame_wqi
 
-        #data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
+        # data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
 
         return data_frame_time
 
     # This method perform the prediction
     def prediction(self):
-
         try:
             value = self.read_table_data()
             if len(value) == 10:
@@ -208,16 +207,7 @@ class Window(QtWidgets.QMainWindow):
                 self.predict_input = self.scaler.transform(value)
                 self.predict_value = self.predicting_model.predict(self.predict_input)
                 index = round(self.predict_value[0], 4)
-                if index < 25:
-                    quality = 'Excellent'
-                elif index < 50:
-                    quality = 'Good'
-                elif index < 75:
-                    quality = 'Poor'
-                elif index < 100:
-                    quality = 'Very Poor'
-                else:
-                    quality = 'Undrinkable'
+                quality = self.find_water_quality(index)
                 display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),
                                                                                            quality=quality)
                 self.ui.resultOutput.clear()
@@ -225,21 +215,34 @@ class Window(QtWidgets.QMainWindow):
                 self.ui.statusbar.showMessage("Prediction Successful!")
             else:
                 self.ui.statusbar.showMessage("Invalid input(s)")
-        except Exception as e:
-            self.ui.statusbar.showMessage("Error occurs within the model: ")
+        except Exception:
+            self.ui.statusbar.showMessage("Error occurs within the model")
+
+    def find_water_quality(self, idx):
+        if idx < 26:
+            quality = 'Excellent'
+        elif idx < 51:
+            quality = 'Good'
+        elif idx < 76:
+            quality = 'Poor'
+        elif idx < 101:
+            quality = 'Very Poor'
+        else:
+            quality = 'Undrinkable'
+        return quality
 
     # This method reads the user input
     def read_table_data(self):
         row_count = self.ui.predictionTableWidget.rowCount()
         final_table_columns = ['WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
                                'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
-        values_df = pd.DataFrame(columns = final_table_columns)
+        values_df = pd.DataFrame(columns=final_table_columns)
         values_df.loc[values_df.shape[0]] = [None, None, None, None, None, None, None, None, None, None]
         values = []
 
-        #get values from table.
+        # get values from table.
         for row in range(row_count):
-            values_df.iat[0,row] = float(self.ui.predictionTableWidget.item(row, 0).text())
+            values_df.iat[0, row] = float(self.ui.predictionTableWidget.item(row, 0).text())
             values.append(float(self.ui.predictionTableWidget.item(row, 0).text()))
 
         values_df = self.scaler.transform(values_df)
@@ -247,7 +250,7 @@ class Window(QtWidgets.QMainWindow):
         # check for invalid inputs
         for row in range(row_count):
             self.ui.predictionTableWidget.item(row, 0).setForeground(QBrush(QColor(0, 0, 0)))
-            if abs(values_df[0,row]) > 3:
+            if abs(values_df[0, row]) > 3:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
             else:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
