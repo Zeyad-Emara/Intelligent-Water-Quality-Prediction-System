@@ -165,7 +165,6 @@ class Window(QtWidgets.QMainWindow):
         data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
                                                         if col not in final_table_columns])
         data_frame_time = data_frame_time.sort_values(by=['year'])
-        # data_frame_time = data_frame_time.dropna()
 
         dupe = data_frame_time
 
@@ -194,8 +193,6 @@ class Window(QtWidgets.QMainWindow):
 
         data_frame_time = pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns=data_frame_time.columns)
         data_frame_time['WQI'] = data_frame_wqi
-
-        # data_frame_time.to_csv(r'C:\Users\USER\Desktop\feature_time.csv', index=False, header=True)
 
         return data_frame_time
 
