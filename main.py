@@ -113,7 +113,7 @@ class Window(QtWidgets.QMainWindow):
             self.graph.clear()
             if self.new_x_axis == 'Years':
                 self.data_frame.plot(kind='line', x=column[self.new_x_axis], y=column[self.new_y_axis],
-                                     ax=self.graph)
+                                     ax=self.graph, legend=False)
             else:
                 self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis],
                                      ax=self.graph)
