@@ -37,13 +37,16 @@ class Window(QtWidgets.QMainWindow):
         self.data_frame = None
         self.is_invalid = False
         self.has_used_data_for_training = False
+
         # add default model
         try:
             self.predicting_model = load('resource/models/WQIModelv3.0.pkl')
             self.scaler = load('resource/models/StdScalerv2.0.pkl')
         except Exception:
             self.ui.statusbar.showMessage("Default modal not detected")
-
+        # add icon and title to the application
+        self.setWindowIcon(QIcon('resource/icon/water-icon.png'))
+        self.setWindowTitle("Water Quality Prediction Application")
         # Default axis
         self.new_x_axis = 'Dissolved Oxygen (mg/l)'
         self.new_y_axis = 'Dissolved Oxygen (mg/l)'
@@ -62,9 +65,6 @@ class Window(QtWidgets.QMainWindow):
         self.ui.autofillPushButton.clicked.connect(self.auto_fill)
         # set result display area read only
         self.ui.resultOutput.setReadOnly(True)
-        # restrict user's input in the table
-        self.delegate = TableWidgetDelegate()
-        self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
         # plot different graph
         self.ui.xAxisComboBox.currentTextChanged.connect(self.change_x_axis)
         self.ui.yAxisComboBox.currentTextChanged.connect(self.change_y_axis)
@@ -85,44 +85,11 @@ class Window(QtWidgets.QMainWindow):
         self.ui.actionResult_widget.triggered.connect(self.result_docker)
         # add retrain model function
         self.ui.actionRe_train.triggered.connect(self.retrain_model)
-        # add icon and title to the application
-        self.setWindowIcon(QIcon('resource/icon/water-icon.png'))
-        self.setWindowTitle("Water Quality Prediction Application")
+        # restrict user's input in the table
+        self.delegate = TableWidgetDelegate()
+        self.ui.predictionTableWidget.setItemDelegateForColumn(0, self.delegate)
         # Your code ends here
         self.show()
-
-    # This method save the new x-axis selected
-    def change_x_axis(self, x_axis):
-        self.new_x_axis = x_axis
-
-    # This method save the new y-axis selected
-    def change_y_axis(self, y_axis):
-        self.new_y_axis = y_axis
-
-    # This method plots the graph
-    def change_graph_axis(self):
-        column = {'Dissolved Oxygen (mg/l)': 'D.O.',
-                  'pH': 'PH',
-                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY',
-                  'B.O.D. (mg/l)': 'B.O.D.',
-                  'Nitrate (mg/l)': 'NITRATE',
-                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM',
-                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM',
-                  'Years': 'year'
-                  }
-        try:
-            self.graph.clear()
-            if self.new_x_axis == 'Years':
-                self.data_frame.plot(kind='line', x=column[self.new_x_axis], y=column[self.new_y_axis],
-                                     ax=self.graph, legend=False)
-            else:
-                self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis],
-                                     ax=self.graph)
-            self.graph.axes.set_xlabel(self.new_x_axis)
-            self.graph.axes.set_ylabel(self.new_y_axis)
-            self.static_canvas.draw()
-        except Exception:
-            self.ui.statusbar.showMessage("Error occurs when plotting graph.")
 
     # This method gets the dataset path from the user
     def find_csv(self):
@@ -133,68 +100,6 @@ class Window(QtWidgets.QMainWindow):
             self.has_used_data_for_training = False
         else:
             self.ui.statusbar.showMessage("No dataset selected")
-
-    # This method retrains the model
-    def retrain_model(self):
-        if self.data_frame is None:
-            self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
-        elif self.has_used_data_for_training:
-            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
-                                          "can overtrain the model")
-        else:
-            try:
-                training_data = self.preprocess_data()
-
-                x_train = training_data.drop(columns=['WQI'])
-                y_train = training_data['WQI']
-
-                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
-                self.predicting_model.fit(x_train, y_train)
-                self.has_used_data_for_training = True
-                self.ui.statusbar.showMessage("retraining successful")
-            except Exception:
-                self.ui.statusbar("Training Error")
-
-    # This method will process the raw data loaded to prepare it for re-training
-    def preprocess_data(self):
-        data_frame_time = self.data_frame
-        # list of final columns to keep
-        final_table_columns = ['year', 'WQI', 'D.O.', 'PH', 'CONDUCTIVITY', 'B.O.D.', 'NITRATE', 'FECAL COLIFORM',
-                               'TOTAL COLIFORM']
-        # remove unwanted columns
-        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
-                                                        if col not in final_table_columns])
-        data_frame_time = data_frame_time.sort_values(by=['year'])
-
-        dupe = data_frame_time
-
-        # appending the features previous in time
-        data_frame_time['WQI t-1'] = dupe['WQI'].shift(1)
-        data_frame_time['WQI t-2'] = dupe['WQI'].shift(2)
-        data_frame_time['WQI t-3'] = dupe['WQI'].shift(3)
-        data_frame_time['D.O. t-1'] = dupe['D.O.'].shift(1)
-        data_frame_time['PH t-1'] = dupe['PH'].shift(1)
-        data_frame_time['CONDUCTIVITY t-1'] = dupe['CONDUCTIVITY'].shift(1)
-        data_frame_time['B.O.D. t-1'] = dupe['B.O.D.'].shift(1)
-        data_frame_time['NITRATE t-1'] = dupe['NITRATE'].shift(1)
-        data_frame_time['FECAL COLIFORM t-1'] = dupe['FECAL COLIFORM'].shift(1)
-        data_frame_time['TOTAL COLIFORM t-1'] = dupe['TOTAL COLIFORM'].shift(1)
-
-        final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
-                               'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
-
-        data_frame_time = data_frame_time.dropna()
-        data_frame_time = data_frame_time.drop(
-            columns=[col for col in data_frame_time if col not in final_table_columns])
-
-        data_frame_wqi = data_frame_time['WQI']
-        data_frame_wqi = data_frame_wqi.reset_index(drop=True)
-        data_frame_time = data_frame_time.drop(columns=['WQI'])
-
-        data_frame_time = pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns=data_frame_time.columns)
-        data_frame_time['WQI'] = data_frame_wqi
-
-        return data_frame_time
 
     # This method perform the prediction
     def prediction(self):
@@ -264,6 +169,101 @@ class Window(QtWidgets.QMainWindow):
                 mean = self.scaler.mean_[idx]
                 self.ui.predictionTableWidget.item(idx, 0).setForeground(QBrush(QColor(96, 64, 31)))
                 self.ui.predictionTableWidget.item(idx, 0).setText(str(round(mean, 6)))
+
+    # This method save the new x-axis selected
+    def change_x_axis(self, x_axis):
+        self.new_x_axis = x_axis
+
+    # This method save the new y-axis selected
+    def change_y_axis(self, y_axis):
+        self.new_y_axis = y_axis
+
+    # This method plots the graph
+    def change_graph_axis(self):
+        column = {'Dissolved Oxygen (mg/l)': 'D.O.',
+                  'pH': 'PH',
+                  'Conductivity (µmhos/cm)': 'CONDUCTIVITY',
+                  'B.O.D. (mg/l)': 'B.O.D.',
+                  'Nitrate (mg/l)': 'NITRATE',
+                  'Fecal Coliform (MPN/100ml)': 'FECAL COLIFORM',
+                  'Total Coliform (MPN/100ml)': 'TOTAL COLIFORM',
+                  'Years': 'year'
+                  }
+        try:
+            self.graph.clear()
+            if self.new_x_axis == 'Years':
+                self.data_frame.plot(kind='line', x=column[self.new_x_axis], y=column[self.new_y_axis],
+                                     ax=self.graph, legend=False)
+            else:
+                self.data_frame.plot(kind='scatter', x=column[self.new_x_axis], y=column[self.new_y_axis],
+                                     ax=self.graph)
+            self.graph.axes.set_xlabel(self.new_x_axis)
+            self.graph.axes.set_ylabel(self.new_y_axis)
+            self.static_canvas.draw()
+        except Exception:
+            self.ui.statusbar.showMessage("Error occurs when plotting graph.")
+
+    # This method retrains the model
+    def retrain_model(self):
+        if self.data_frame is None:
+            self.ui.statusbar.showMessage("No dataset has been loaded to train the model.")
+        elif self.has_used_data_for_training:
+            self.ui.statusbar.showMessage("Data has been used to train the model. Multiple training with same data "
+                                          "can overtrain the model")
+        else:
+            try:
+                training_data = self.preprocess_data()
+
+                x_train = training_data.drop(columns=['WQI'])
+                y_train = training_data['WQI']
+
+                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                self.predicting_model.fit(x_train, y_train)
+                self.has_used_data_for_training = True
+                self.ui.statusbar.showMessage("retraining successful")
+            except Exception:
+                self.ui.statusbar("Training Error")
+
+    # This method will process the raw data loaded to prepare it for re-training
+    def preprocess_data(self):
+        data_frame_time = self.data_frame
+        # list of final columns to keep
+        final_table_columns = ['year', 'WQI', 'D.O.', 'PH', 'CONDUCTIVITY', 'B.O.D.', 'NITRATE', 'FECAL COLIFORM',
+                               'TOTAL COLIFORM']
+        # remove unwanted columns
+        data_frame_time = data_frame_time.drop(columns=[col for col in data_frame_time
+                                                        if col not in final_table_columns])
+        data_frame_time = data_frame_time.sort_values(by=['year'])
+
+        dupe = data_frame_time
+
+        # appending the features previous in time
+        data_frame_time['WQI t-1'] = dupe['WQI'].shift(1)
+        data_frame_time['WQI t-2'] = dupe['WQI'].shift(2)
+        data_frame_time['WQI t-3'] = dupe['WQI'].shift(3)
+        data_frame_time['D.O. t-1'] = dupe['D.O.'].shift(1)
+        data_frame_time['PH t-1'] = dupe['PH'].shift(1)
+        data_frame_time['CONDUCTIVITY t-1'] = dupe['CONDUCTIVITY'].shift(1)
+        data_frame_time['B.O.D. t-1'] = dupe['B.O.D.'].shift(1)
+        data_frame_time['NITRATE t-1'] = dupe['NITRATE'].shift(1)
+        data_frame_time['FECAL COLIFORM t-1'] = dupe['FECAL COLIFORM'].shift(1)
+        data_frame_time['TOTAL COLIFORM t-1'] = dupe['TOTAL COLIFORM'].shift(1)
+
+        final_table_columns = ['WQI', 'WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
+                               'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
+
+        data_frame_time = data_frame_time.dropna()
+        data_frame_time = data_frame_time.drop(
+            columns=[col for col in data_frame_time if col not in final_table_columns])
+
+        data_frame_wqi = data_frame_time['WQI']
+        data_frame_wqi = data_frame_wqi.reset_index(drop=True)
+        data_frame_time = data_frame_time.drop(columns=['WQI'])
+
+        data_frame_time = pd.DataFrame(self.scaler.fit_transform(data_frame_time), columns=data_frame_time.columns)
+        data_frame_time['WQI'] = data_frame_wqi
+
+        return data_frame_time
 
     # This method will generate the import docket
     def import_docker(self):
