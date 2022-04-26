@@ -105,20 +105,23 @@ class Window(QtWidgets.QMainWindow):
     def prediction(self):
         try:
             value = self.read_table_data()
+
+            value = np.array(value).reshape(1, -1)
+            self.predict_input = self.scaler.transform(value)
+            self.predict_value = self.predicting_model.predict(self.predict_input)
+            index = round(self.predict_value[0], 4)
+            quality = self.find_water_quality(index)
+            display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),
+                                                                                       quality=quality)
+            self.ui.resultOutput.clear()
+            self.ui.resultOutput.insertPlainText(display)
+
+
             if not self.is_invalid:
-                value = np.array(value).reshape(1, -1)
-                self.predict_input = self.scaler.transform(value)
-                self.predict_value = self.predicting_model.predict(self.predict_input)
-                index = round(self.predict_value[0], 4)
-                quality = self.find_water_quality(index)
-                display = "Water Quality Index: {index} \nWater Quality: {quality}".format(index=str(index),
-                                                                                           quality=quality)
-                self.ui.resultOutput.clear()
-                self.ui.resultOutput.insertPlainText(display)
                 self.ui.statusbar.showMessage("Prediction Successful!")
             else:
                 self.is_invalid = False
-                self.ui.statusbar.showMessage("Invalid input(s)")
+                self.ui.statusbar.showMessage("Outlier detected. Prediction may be inaccurate")
         except Exception:
             self.ui.statusbar.showMessage("Error occurs within the model")
 
