@@ -35,7 +35,7 @@ class Window(QtWidgets.QMainWindow):
         self.scaler = None
         self.predicting_model = None
         self.data_frame = None
-        self.is_invalid = False
+        self.is_outlier_exist = False
         self.has_used_data_for_training = False
 
         # add default model
@@ -111,6 +111,7 @@ class Window(QtWidgets.QMainWindow):
 
     # This method perform the prediction
     def prediction(self):
+
         try:
             value = self.read_table_data()
 
@@ -119,8 +120,16 @@ class Window(QtWidgets.QMainWindow):
             final_table_columns = ['WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
                                    'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
 
-            value = pd.DataFrame(value,columns = final_table_columns)
-            self.predict_input = pd.DataFrame(self.scaler.transform(value),columns = final_table_columns)
+            value = pd.DataFrame(value, columns=final_table_columns)
+        except Exception:
+            self.ui.statusbar.showMessage("Error: couldn't read values")
+
+        try:
+            self.predict_input = pd.DataFrame(self.scaler.transform(value), columns=final_table_columns)
+        except Exception:
+            self.ui.statusbar.showMessage("Error: couldn't scale values")
+
+        try:
             self.predict_value = self.predicting_model.predict(self.predict_input)
             index = round(self.predict_value[0], 4)
             quality = self.find_water_quality(index)
@@ -129,13 +138,13 @@ class Window(QtWidgets.QMainWindow):
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(display)
 
-            if not self.is_invalid:
+            if not self.is_outlier_exist:
                 self.ui.statusbar.showMessage("Prediction Successful!")
             else:
-                self.is_invalid = False
+                self.is_outlier_exist = False
                 self.ui.statusbar.showMessage("Outlier detected. Prediction may be inaccurate")
         except Exception:
-            self.ui.statusbar.showMessage("Error occurs within the model")
+            self.ui.statusbar.showMessage("Error: model couldn't perform prediction")
 
     def find_water_quality(self, idx):
         if idx < 26:
@@ -171,7 +180,7 @@ class Window(QtWidgets.QMainWindow):
             self.ui.predictionTableWidget.item(row, 0).setForeground(QBrush(QColor(0, 0, 0)))
             if abs(values_df[0, row]) > 3:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("red"))
-                self.is_invalid = True
+                self.is_outlier_exist = True
             else:
                 self.ui.predictionTableWidget.item(row, 0).setBackground(QColor("white"))
 
@@ -228,11 +237,10 @@ class Window(QtWidgets.QMainWindow):
         else:
             try:
                 training_data = self.preprocess_data()
-
                 x_train = training_data.drop(columns=['WQI'])
                 y_train = training_data['WQI']
 
-                x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
+                #x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2)
                 self.predicting_model.fit(x_train, y_train)
                 self.has_used_data_for_training = True
                 self.ui.statusbar.showMessage("retraining successful")

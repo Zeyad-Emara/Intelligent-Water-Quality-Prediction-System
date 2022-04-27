@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="added column name checker">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="f2f90be0-4a04-45ce-b4b6-f9bcc171137b" name="Changes" comment="fixed that warning message for my sanity">
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -290,7 +289,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651089299246</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="fixed that warning message for my sanity">
+      <created>1651089970376</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1651089970376</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -324,7 +330,8 @@
     <MESSAGE value="cleaned up again" />
     <MESSAGE value="can now predict even with outlier" />
     <MESSAGE value="added column name checker" />
-    <option name="LAST_COMMIT_MESSAGE" value="added column name checker" />
+    <MESSAGE value="fixed that warning message for my sanity" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed that warning message for my sanity" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
