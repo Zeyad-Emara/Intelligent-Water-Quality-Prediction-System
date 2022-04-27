@@ -106,8 +106,6 @@ class Window(QtWidgets.QMainWindow):
             else:
                 self.ui.statusbar.showMessage("Dataset failed to load: not enough columns")
 
-
-
         else:
             self.ui.statusbar.showMessage("No dataset selected")
 
@@ -117,7 +115,12 @@ class Window(QtWidgets.QMainWindow):
             value = self.read_table_data()
 
             value = np.array(value).reshape(1, -1)
-            self.predict_input = self.scaler.transform(value)
+
+            final_table_columns = ['WQI t-1', 'WQI t-2', 'WQI t-3', 'D.O. t-1', 'PH t-1', 'CONDUCTIVITY t-1',
+                                   'B.O.D. t-1', 'NITRATE t-1', 'FECAL COLIFORM t-1', 'TOTAL COLIFORM t-1']
+
+            value = pd.DataFrame(value,columns = final_table_columns)
+            self.predict_input = pd.DataFrame(self.scaler.transform(value),columns = final_table_columns)
             self.predict_value = self.predicting_model.predict(self.predict_input)
             index = round(self.predict_value[0], 4)
             quality = self.find_water_quality(index)
