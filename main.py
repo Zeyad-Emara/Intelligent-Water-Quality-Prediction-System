@@ -96,8 +96,18 @@ class Window(QtWidgets.QMainWindow):
         self.filePath = QtWidgets.QFileDialog.getOpenFileName(filter="csv (*.csv)")[0]
         if self.filePath:
             self.data_frame = pd.read_csv(self.filePath)
-            self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
-            self.has_used_data_for_training = False
+
+            final_table_columns = ['year', 'WQI', 'D.O.', 'PH', 'CONDUCTIVITY', 'B.O.D.', 'NITRATE', 'FECAL COLIFORM',
+                                   'TOTAL COLIFORM']
+
+            if set(final_table_columns).issubset(self.data_frame.columns):
+                self.ui.statusbar.showMessage("Dataset selected from " + self.filePath)
+                self.has_used_data_for_training = False
+            else:
+                self.ui.statusbar.showMessage("Dataset failed to load: not enough columns")
+
+
+
         else:
             self.ui.statusbar.showMessage("No dataset selected")
 
@@ -115,7 +125,6 @@ class Window(QtWidgets.QMainWindow):
                                                                                        quality=quality)
             self.ui.resultOutput.clear()
             self.ui.resultOutput.insertPlainText(display)
-
 
             if not self.is_invalid:
                 self.ui.statusbar.showMessage("Prediction Successful!")
